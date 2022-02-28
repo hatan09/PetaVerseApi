@@ -15,7 +15,7 @@ namespace PetaVerseApi.Core.Entities
         public bool? IsActive { get; set; }
         public bool IsDeleted { get; set; } = false;
 
-        public virtual ICollection<Post> Posts { get; set; } = new HashSet<Post>();
+        public virtual ICollection<Status> Statuses { get; set; } = new HashSet<Status>();
         public virtual ICollection<UserRole> UserRoles { get; } = new HashSet<UserRole>();
         public virtual ICollection<UserAnimal> UserAnimals { get; set; } = new HashSet<UserAnimal>();
     }

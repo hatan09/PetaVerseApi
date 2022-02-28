@@ -12,23 +12,23 @@ using System.Threading.Tasks;
 
 namespace PetaVerseApi.Repository
 {
-    public class PostRepository : BaseRepository<Post>, IPostRepository
+    public class PostRepository : BaseRepository<Status>, IPostRepository
     {
         public PostRepository(ApplicationDbContext context) : base(context) { }
 
-        public override IQueryable<Post> FindAll(Expression<Func<Post, bool>>? predicate = null)
+        public override IQueryable<Status> FindAll(Expression<Func<Status, bool>>? predicate = null)
             => _dbSet
                 .WhereIf(predicate != null, predicate!)
-                .Include(p => p.User);
+                .Include(s => s.User);
 
-        public async Task<Post?> FindByTitle(string title, CancellationToken cancellationToken = default)
+        public async Task<Status?> FindByTitle(string title, CancellationToken cancellationToken = default)
             => await FindAll()
-                .Where(p => p.Title == title)
+                .Where(s => s.Title == title)
                 .FirstOrDefaultAsync(cancellationToken);
 
-        public async Task<Post?> FindByTopic(string toppic, CancellationToken cancellationToken = default)
+        public async Task<Status?> FindByTopic(string toppic, CancellationToken cancellationToken = default)
             => await FindAll()
-                .Where(p => p.Toppic == toppic)
+                .Where(s => s.Toppic == toppic)
                 .FirstOrDefaultAsync(cancellationToken); 
     }
 }
