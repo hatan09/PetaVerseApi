@@ -2,9 +2,9 @@
 
 namespace PetaVerseApi.Contract
 {
-    public interface IPostRepository : IBaseRepository<Post>
+    public interface IPostRepository : IBaseRepository<Status>
     {
-        Task<Post?> FindByTitle(string title, CancellationToken cancellationToken =default);
-        Task<Post?> FindByTopic(string Toppic, CancellationToken cancellationToken = default);
+        Task<Status?> FindByTitle(string title, CancellationToken cancellationToken =default);
+        Task<Status?> FindByTopic(string Toppic, CancellationToken cancellationToken = default);
     }
 }

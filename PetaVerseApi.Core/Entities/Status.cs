@@ -1,6 +1,6 @@
 ﻿namespace PetaVerseApi.Core.Entities
 {
-    public class Post : BaseEntity
+    public class Status : BaseEntity
     {
         public string Toppic { get; set; } = string.Empty;
 
