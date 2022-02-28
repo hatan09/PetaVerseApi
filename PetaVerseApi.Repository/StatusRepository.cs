@@ -12,9 +12,9 @@ using System.Threading.Tasks;
 
 namespace PetaVerseApi.Repository
 {
-    public class PostRepository : BaseRepository<Status>, IPostRepository
+    public class StatusRepository : BaseRepository<Status>, IStatusRepository
     {
-        public PostRepository(ApplicationDbContext context) : base(context) { }
+        public StatusRepository(ApplicationDbContext context) : base(context) { }
 
         public override IQueryable<Status> FindAll(Expression<Func<Status, bool>>? predicate = null)
             => _dbSet
