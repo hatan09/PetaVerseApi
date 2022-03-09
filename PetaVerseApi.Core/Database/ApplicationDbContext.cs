@@ -11,6 +11,12 @@ namespace PetaVerseApi.Core.Database
         public virtual DbSet<Animal> Animals { get; set; } = null!;
         public virtual DbSet<UserAnimal> UserAnimals { get; set; } = null!;
         public virtual DbSet<Status> Statuses { get; set; } = null!;
+        public virtual DbSet<Species> Species { get; set; } = null!;
+        public virtual DbSet<Temperament> Temperaments { get; set; } = null!;
+        public virtual DbSet<Shedding> Sheddings { get; set; } = null!;
+        public virtual DbSet<PetShorts> PetShorts { get; set; } = null!;
+        
+
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -40,8 +46,6 @@ namespace PetaVerseApi.Core.Database
             builder.Entity<Animal>(entity => 
             {
                 entity.Property(a => a.Name).IsRequired().HasMaxLength(50);
-
-                entity.Property(a => a.Species).IsRequired().HasMaxLength(30);
             });
 
             builder.Entity<Status>(entity =>
