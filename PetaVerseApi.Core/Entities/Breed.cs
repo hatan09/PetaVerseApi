@@ -17,7 +17,6 @@
 
         public CoatType Coat             { get; set; }
         public string   Color            { get; set; } = String.Empty;
-
     }
 
     public enum CoatType
