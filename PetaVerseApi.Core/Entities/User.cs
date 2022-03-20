@@ -1,8 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity;
-
+﻿
 namespace PetaVerseApi.Core.Entities
 {
-    public class User : IdentityUser
+    public class User : BaseEntity
     {
         public string Guid { get; set; } = null!;
         public string FirstName { get; set; } = string.Empty;
@@ -15,8 +14,8 @@ namespace PetaVerseApi.Core.Entities
         public bool? IsActive { get; set; }
         public bool IsDeleted { get; set; } = false;
 
-        public virtual ICollection<Status> Statuses { get; set; } = new HashSet<Status>();
-        public virtual ICollection<UserRole> UserRoles { get; } = new HashSet<UserRole>();
+        public virtual ICollection<Status>     Statuses    { get; set; } = new HashSet<Status>();
+        public virtual ICollection<UserRole>   UserRoles   { get; }      = new HashSet<UserRole>();
         public virtual ICollection<UserAnimal> UserAnimals { get; set; } = new HashSet<UserAnimal>();
     }
 }

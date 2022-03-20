@@ -1,19 +1,14 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Options;
 using PetaVerseApi.Core.Database;
-using PetaVerseApi.Core.Entities;
 using PetaVerseApi.Contract;
 using PetaVerseApi.Repository;
 using PetaVerseApi.DTOs.Mapping;
-using System.Net.Mail;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddRazorPages();
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))) ;
 builder.Services.AddSwaggerGen(options =>
 {
@@ -23,20 +18,6 @@ builder.Services.AddControllers();
 builder.Services.AddScoped<IAnimalRepository, AnimalRepository>();
 builder.Services.AddScoped<IStatusRepository, StatusRepository>();
 
-builder.Services.AddIdentity<User, Role>(options =>
-{
-    options.Password.RequireDigit = false;
-    options.Password.RequireLowercase = false;
-    options.Password.RequireUppercase = false;
-    options.Password.RequireNonAlphanumeric = false;
-    options.Password.RequiredLength = 1;
-
-    options.User.RequireUniqueEmail = true;
-    options.SignIn.RequireConfirmedEmail = true;
-})
-    .AddEntityFrameworkStores<ApplicationDbContext>()
-    .AddUserManager<UserManager>()
-    .AddDefaultTokenProviders();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("ClientPermission", policy =>
@@ -70,14 +51,11 @@ app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "PetaVerseAp
 
 app.UseHttpsRedirection();
 
-app.UseStaticFiles();
-
 app.UseCors("ClientPermission");
 
 app.UseRouting();
 
 app.UseAuthorization();
 
-app.MapRazorPages();
 
 app.Run();
