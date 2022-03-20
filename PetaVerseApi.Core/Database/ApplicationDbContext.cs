@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace PetaVerseApi.Core.Database
 {
-    public class ApplicationDbContext : IdentityDbContext<User, Role, string, IdentityUserClaim<string>, UserRole, IdentityUserLogin<string>, IdentityRoleClaim<string>, IdentityUserToken<string>>
+    public class ApplicationDbContext : DbContext
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
         public virtual DbSet<Animal> Animals { get; set; } = null!;
@@ -33,14 +33,14 @@ namespace PetaVerseApi.Core.Database
 
             builder.Entity<UserRole>(entity =>
             {
-                entity.HasOne(ur => ur.Role).WithMany(r => r!.UserRoles).HasForeignKey(ur => ur.RoleId).IsRequired().OnDelete(DeleteBehavior.Cascade);
-                entity.HasOne(ur => ur.User).WithMany(u => u!.UserRoles).HasForeignKey(ur => ur.UserId).IsRequired().OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(ur => ur.Role).WithMany(r => r!.UserRoles).HasForeignKey(ur => ur.Id).IsRequired().OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(ur => ur.User).WithMany(u => u!.UserRoles).HasForeignKey(ur => ur.Id).IsRequired().OnDelete(DeleteBehavior.Cascade);
             });
 
             builder.Entity<UserAnimal>(entity =>
             {
-                entity.HasOne(ua => ua.Animal).WithMany(a => a.UserAnimals).HasForeignKey(ua => ua.AnimalId).IsRequired().OnDelete(DeleteBehavior.Cascade);
-                entity.HasOne(ua => ua.User).WithMany(u => u.UserAnimals).HasForeignKey(ua => ua.UserId).IsRequired().OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(ua => ua.Animal).WithMany(a => a.UserAnimals).HasForeignKey(ua => ua.Id).IsRequired().OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(ua => ua.User).WithMany(u => u.UserAnimals).HasForeignKey(ua => ua.Id).IsRequired().OnDelete(DeleteBehavior.Cascade);
             });
 
             builder.Entity<Animal>(entity => 

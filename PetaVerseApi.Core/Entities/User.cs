@@ -1,4 +1,6 @@
 ﻿
+using Microsoft.AspNetCore.Identity;
+
 namespace PetaVerseApi.Core.Entities
 {
     public class User : BaseEntity

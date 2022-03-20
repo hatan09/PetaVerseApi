@@ -2,7 +2,7 @@
 
 namespace PetaVerseApi.Core.Entities
 {
-    public class UserRole : IdentityUserRole<string>
+    public class UserRole : BaseEntity
     {
         public virtual User? User { get; set; }
         public virtual Role? Role { get; set; }
