@@ -10,13 +10,18 @@ using PetaVerseApi.DTOs.Mapping;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))) ;
-builder.Services.AddSwaggerGen(options => options.SwaggerDoc("v1", new OpenApiInfo { Title = "BlogApi", Version = "v1" }));
+builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddSwaggerGen(options => options.SwaggerDoc("v1", new OpenApiInfo { Title = "PetaVerseApi", Version = "v1" }));
 builder.Services.AddControllers();
 
 builder.Services.AddScoped<IAnimalRepository, AnimalRepository>();
-
 builder.Services.AddScoped<IStatusRepository, StatusRepository>();
+builder.Services.AddScoped<ITemperamentRepository, TemperamentRepository>();
+builder.Services.AddScoped<ISpeciesRepository, SpeciesRepository>();
+builder.Services.AddScoped<ISheddingRepository, SheddingRepository>();
+builder.Services.AddScoped<IPetShortsRepository, PetShortsRepository>();
+builder.Services.AddScoped<IPetaverseMediaRepository, PetaverseMediaRepository>();
+builder.Services.AddScoped<IBreedRepository, BreedRepository>();
 
 builder.Services.AddCors(options =>
 {
@@ -36,7 +41,6 @@ builder.Services.AddSingleton(mapper);
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
@@ -55,6 +59,5 @@ app.UseCors("ClientPermission");
 app.UseRouting();
 
 app.UseAuthorization();
-
 
 app.Run();
