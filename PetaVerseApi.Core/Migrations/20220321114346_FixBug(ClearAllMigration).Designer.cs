@@ -12,8 +12,8 @@ using PetaVerseApi.Core.Database;
 namespace PetaVerseApi.Core.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220320121831_ChangeBaseEntityIDType")]
-    partial class ChangeBaseEntityIDType
+    [Migration("20220321114346_FixBug(ClearAllMigration)")]
+    partial class FixBugClearAllMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -98,6 +98,7 @@ namespace PetaVerseApi.Core.Migrations
                         .HasColumnType("float");
 
                     b.Property<string>("SpeciesId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
@@ -142,7 +143,6 @@ namespace PetaVerseApi.Core.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("PetId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("PublisherId")
@@ -309,7 +309,19 @@ namespace PetaVerseApi.Core.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("AnimalId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("AnimalId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("UserAnimals");
                 });
@@ -319,7 +331,19 @@ namespace PetaVerseApi.Core.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("RoleId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("RoleId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("UserRole");
                 });
@@ -341,9 +365,13 @@ namespace PetaVerseApi.Core.Migrations
 
             modelBuilder.Entity("PetaVerseApi.Core.Entities.Breed", b =>
                 {
-                    b.HasOne("PetaVerseApi.Core.Entities.Species", null)
+                    b.HasOne("PetaVerseApi.Core.Entities.Species", "Species")
                         .WithMany("Breeds")
-                        .HasForeignKey("SpeciesId");
+                        .HasForeignKey("SpeciesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Species");
                 });
 
             modelBuilder.Entity("PetaVerseApi.Core.Entities.PetShorts", b =>
@@ -354,9 +382,7 @@ namespace PetaVerseApi.Core.Migrations
 
                     b.HasOne("PetaVerseApi.Core.Entities.Animal", "Pet")
                         .WithMany()
-                        .HasForeignKey("PetId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("PetId");
 
                     b.HasOne("PetaVerseApi.Core.Entities.User", "Publisher")
                         .WithMany()
@@ -382,13 +408,13 @@ namespace PetaVerseApi.Core.Migrations
                 {
                     b.HasOne("PetaVerseApi.Core.Entities.Animal", "Animal")
                         .WithMany("UserAnimals")
-                        .HasForeignKey("Id")
+                        .HasForeignKey("AnimalId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("PetaVerseApi.Core.Entities.User", "User")
                         .WithMany("UserAnimals")
-                        .HasForeignKey("Id")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -401,13 +427,13 @@ namespace PetaVerseApi.Core.Migrations
                 {
                     b.HasOne("PetaVerseApi.Core.Entities.Role", "Role")
                         .WithMany("UserRoles")
-                        .HasForeignKey("Id")
+                        .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("PetaVerseApi.Core.Entities.User", "User")
                         .WithMany("UserRoles")
-                        .HasForeignKey("Id")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

@@ -2,6 +2,6 @@
 {
     public class BaseEntity
     {
-        public string Id { get; set; } = string.Empty;
+        public virtual string Id { get; set; } = string.Empty;
     }
 }
