@@ -8,6 +8,8 @@ namespace PetaVerseApi.Core.Entities
         public string       Guid                { get; set; } = null!;
         public string       FirstName           { get; set; } = string.Empty;
         public string       LastName            { get; set; } = string.Empty;
+        public string       Email               { get; set; } = string.Empty;
+        public string?      PhoneNumber         { get; set; }
         public bool?        Gender              { get; set; }
         public DateTime?    DateOfBirth         { get; set; }
         public string?      ProfileImageUrl     { get; set; }

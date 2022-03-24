@@ -4,10 +4,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace PetaVerseApi.DTOs
 {
+    [ModelBinder(typeof(MultipleSourcesModelBinder<UserDTO>))]
     public class UserDTO
     {
-        [ModelBinder(typeof(MultipleSourcesModelBinder<UserDTO>))]
-
         [FromRoute]
         public string       Guid                { get; set; } = string.Empty;
         public string?      Username            { get; set; }
@@ -28,7 +27,9 @@ namespace PetaVerseApi.DTOs
         public DateTime?    DateOfBirth         { get; set; }
         public string?      ProfileImageUrl     { get; set; }
         public string?      CoverImageUrl       { get; set; }
+        public DateTime     CreatedAt           { get; set; } = DateTime.UtcNow;
         public bool?        IsActive            { get; set; }
+        public bool         IsDeleted           { get; set; } = false;
 
         public ICollection<string>  Roles   { get; set; } = Array.Empty<string>();
     }

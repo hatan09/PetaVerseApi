@@ -20,6 +20,8 @@
 
     public enum CoatType
     {
-        Medium, Heavy, Light
+        Medium, 
+        Heavy, 
+        Light
     }
 }
