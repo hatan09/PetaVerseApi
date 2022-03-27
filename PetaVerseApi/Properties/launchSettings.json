@@ -8,6 +8,7 @@
       "sslPort": 44331
     }
   },
+
   "profiles": {
     "IIS Express": {
       "commandName": "IISExpress",
@@ -16,7 +17,8 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
-    },
+    }
+  },
 
     "PetaVerseApi": {
       "commandName": "Project",
@@ -29,4 +31,3 @@
       }
     }
   }
-}

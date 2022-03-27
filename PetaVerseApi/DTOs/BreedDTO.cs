@@ -3,10 +3,10 @@ using PetaVerseApi.Services;
 
 namespace PetaVerseApi.DTOs
 {
-    [ModelBinder(typeof(MultipleSourcesModelBinder<BreedDTO>))]
+    //[ModelBinder(typeof(MultipleSourcesModelBinder<BreedDTO>))]
     public class BreedDTO : BaseDTO
     {
-        public string       SpeciesId           { get; set; } = null!;
+        public string       SpeciesId           { get; set; } = string.Empty;
         public string       BreedName           { get; set; } = string.Empty;
         public string       BreedDescription    { get; set; } = string.Empty;
         public string       ImageUrl            { get; set; } = string.Empty;

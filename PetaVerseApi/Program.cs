@@ -29,7 +29,7 @@ builder.Services.AddCors(options =>
     {
         policy.AllowAnyHeader()
               .AllowAnyMethod()
-              .WithOrigins("http://localhost:3000")
+              .WithOrigins("http://localhost:7094")
               .AllowCredentials();
     });
 });
@@ -59,5 +59,7 @@ app.UseCors("ClientPermission");
 app.UseRouting();
 
 app.UseAuthorization();
+
+app.UseEndpoints(endpoints => endpoints.MapControllers());
 
 app.Run();

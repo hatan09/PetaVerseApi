@@ -24,10 +24,15 @@ namespace PetaVerseApi.Repository
         public virtual IQueryable<T> FindAll(Expression<Func<T, bool>>? predicate = null)
             => _dbSet.WhereIf(predicate != null, predicate!);
 
-        public virtual async Task<T?> FindByIdAsync(int id, CancellationToken cancellationToken = default)
+        public virtual async Task<T?> FindByIdAsync(string id, CancellationToken cancellationToken = default)
         {
             var items = await _dbSet.FindAsync(id, cancellationToken);
             return items;
+        }
+
+        public virtual async Task<T?> FindByNameAsync(string name, CancellationToken cancellationToken = default)
+        {
+            return await _dbSet.FindAsync(name, cancellationToken);
         }
 
         public void Add(T entity)

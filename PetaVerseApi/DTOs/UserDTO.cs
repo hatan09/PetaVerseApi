@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace PetaVerseApi.DTOs
 {
-    [ModelBinder(typeof(MultipleSourcesModelBinder<UserDTO>))]
+    //[ModelBinder(typeof(MultipleSourcesModelBinder<UserDTO>))]
     public class UserDTO
     {
         [FromRoute]

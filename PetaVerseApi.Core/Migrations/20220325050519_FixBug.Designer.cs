@@ -12,8 +12,8 @@ using PetaVerseApi.Core.Database;
 namespace PetaVerseApi.Core.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220321114346_FixBug(ClearAllMigration)")]
-    partial class FixBugClearAllMigration
+    [Migration("20220325050519_FixBug")]
+    partial class FixBug
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -168,6 +168,10 @@ namespace PetaVerseApi.Core.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.ToTable("Role");
@@ -270,6 +274,10 @@ namespace PetaVerseApi.Core.Migrations
                     b.Property<DateTime?>("DateOfBirth")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -291,6 +299,9 @@ namespace PetaVerseApi.Core.Migrations
 
                     b.Property<string>("LastName")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ProfileImageUrl")
