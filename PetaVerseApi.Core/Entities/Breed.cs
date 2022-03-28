@@ -16,6 +16,8 @@
         public string       Color               { get; set; } = string.Empty;
 
         public Species?     Species     { get; set; }
+
+        public virtual ICollection<Animal>  Animals     { get; set; } = new HashSet<Animal>();
     }
 
     public enum CoatType

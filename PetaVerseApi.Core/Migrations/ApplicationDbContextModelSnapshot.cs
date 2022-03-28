@@ -33,7 +33,7 @@ namespace PetaVerseApi.Core.Migrations
                     b.Property<int>("Age")
                         .HasColumnType("int");
 
-                    b.Property<int?>("BreedId")
+                    b.Property<int>("BreedId")
                         .HasColumnType("int");
 
                     b.Property<bool>("Gender")
@@ -44,7 +44,7 @@ namespace PetaVerseApi.Core.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int?>("SpeciesId")
+                    b.Property<int>("SpeciesId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -391,12 +391,16 @@ namespace PetaVerseApi.Core.Migrations
             modelBuilder.Entity("PetaVerseApi.Core.Entities.Animal", b =>
                 {
                     b.HasOne("PetaVerseApi.Core.Entities.Breed", "Breed")
-                        .WithMany()
-                        .HasForeignKey("BreedId");
+                        .WithMany("Animals")
+                        .HasForeignKey("BreedId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.HasOne("PetaVerseApi.Core.Entities.Species", "Species")
-                        .WithMany()
-                        .HasForeignKey("SpeciesId");
+                        .WithMany("Animals")
+                        .HasForeignKey("SpeciesId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.Navigation("Breed");
 
@@ -487,6 +491,11 @@ namespace PetaVerseApi.Core.Migrations
                     b.Navigation("UserAnimals");
                 });
 
+            modelBuilder.Entity("PetaVerseApi.Core.Entities.Breed", b =>
+                {
+                    b.Navigation("Animals");
+                });
+
             modelBuilder.Entity("PetaVerseApi.Core.Entities.Role", b =>
                 {
                     b.Navigation("UserRoles");
@@ -494,6 +503,8 @@ namespace PetaVerseApi.Core.Migrations
 
             modelBuilder.Entity("PetaVerseApi.Core.Entities.Species", b =>
                 {
+                    b.Navigation("Animals");
+
                     b.Navigation("Breeds");
                 });
 
