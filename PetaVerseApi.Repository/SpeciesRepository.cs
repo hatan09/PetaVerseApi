@@ -1,4 +1,5 @@
-﻿using PetaVerseApi.Contract;
+﻿using Microsoft.EntityFrameworkCore;
+using PetaVerseApi.Contract;
 using PetaVerseApi.Core.Database;
 using PetaVerseApi.Core.Entities;
 

@@ -16,6 +16,7 @@ namespace PetaVerseApi.DTOs.Mapping
             CreateMap<SpeciesDTO, Species>()
                 .ForMember(s => s.Id, opt => opt.Ignore());
 
+
             CreateMap<User, UserDTO>()
                 .ForMember(d => d.Roles, opt => opt.MapFrom(s => s.UserRoles.Select(ur => ur.Role!.Name)));
             CreateMap<UserDTO, User>()

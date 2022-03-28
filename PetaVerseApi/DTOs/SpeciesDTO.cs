@@ -1,5 +1,9 @@
-﻿namespace PetaVerseApi.DTOs
+﻿using Microsoft.AspNetCore.Mvc;
+using PetaVerseApi.Services;
+
+namespace PetaVerseApi.DTOs
 {
+    //[ModelBinder(typeof(MultipleSourcesModelBinder<BreedDTO>))]
     public class SpeciesDTO : BaseDTO
     {
         public string   Name            { get; set; } = string.Empty;

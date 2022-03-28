@@ -2,7 +2,7 @@
 {
     public class Breed : BaseEntity
     {
-        public string       SpeciesId           { get; set; } = null!;
+        public int          SpeciesId           { get; set; }
         public string       BreedName           { get; set; } = string.Empty;
         public string       BreedDescription    { get; set; } = string.Empty;
         public string       ImageUrl            { get; set; } = string.Empty;

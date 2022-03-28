@@ -39,9 +39,9 @@ namespace PetaVerseApi.Controller
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(BreedDTO dto, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> Update([FromBody] BreedDTO dto, int id , CancellationToken cancellationToken = default)
         {
-            var breed = await _breedRepository.FindByIdAsync(dto.Id);
+            var breed = await _breedRepository.FindByIdAsync(id, cancellationToken);
             if (breed is null)
                 return NotFound();
 
@@ -51,9 +51,9 @@ namespace PetaVerseApi.Controller
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(BreedDTO dto, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken = default)
         {
-            var breed = await _breedRepository.FindByIdAsync(dto.Id);
+            var breed = await _breedRepository.FindByIdAsync(id, cancellationToken);
             if (breed is null)
                 return NotFound();
 

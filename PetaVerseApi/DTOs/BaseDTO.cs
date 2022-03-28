@@ -8,5 +8,5 @@ namespace PetaVerseApi.DTOs
         public T Id { get; set; } = default!;
     }
 
-    public abstract class BaseDTO : BaseDTO<string> { }
+    public abstract class BaseDTO : BaseDTO<int> { }
 }

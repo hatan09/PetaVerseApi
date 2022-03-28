@@ -39,9 +39,9 @@ namespace PetaVerseApi.Controller
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(SpeciesDTO dto, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> Update([FromBody]  SpeciesDTO dto, int id, CancellationToken cancellationToken = default)
         {
-            var species = await _speciesRepository.FindByIdAsync(dto.Id);
+            var species = await _speciesRepository.FindByIdAsync(id,cancellationToken);
             if (species is null)
                 return NotFound();
 
@@ -51,23 +51,12 @@ namespace PetaVerseApi.Controller
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(SpeciesDTO dto, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken = default)
         {
-            var species = await _speciesRepository.FindByIdAsync(dto.Id);
+            var species = await _speciesRepository.FindByIdAsync(id, cancellationToken);
             if (species is null)
                 return NotFound();
 
-            _speciesRepository.Delete(species);
-            await _speciesRepository.SaveChangesAsync(cancellationToken);
-            return NoContent();
-        }
-
-        [HttpDelete("{name}")]
-        public async Task<IActionResult> DeleteByName(SpeciesDTO dto, CancellationToken cancellationToken)
-        {
-            var species = await _speciesRepository.FindByNameAsync(dto.Name);
-            if (species is null)
-                return NotFound();
             _speciesRepository.Delete(species);
             await _speciesRepository.SaveChangesAsync(cancellationToken);
             return NoContent();

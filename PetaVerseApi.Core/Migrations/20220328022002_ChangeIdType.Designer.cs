@@ -12,8 +12,8 @@ using PetaVerseApi.Core.Database;
 namespace PetaVerseApi.Core.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220325050519_FixBug")]
-    partial class FixBug
+    [Migration("20220328022002_ChangeIdType")]
+    partial class ChangeIdType
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -26,14 +26,17 @@ namespace PetaVerseApi.Core.Migrations
 
             modelBuilder.Entity("PetaVerseApi.Core.Entities.Animal", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<int>("Age")
                         .HasColumnType("int");
 
-                    b.Property<string>("BreedId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int?>("BreedId")
+                        .HasColumnType("int");
 
                     b.Property<bool>("Gender")
                         .HasColumnType("bit");
@@ -43,8 +46,8 @@ namespace PetaVerseApi.Core.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("SpeciesId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int?>("SpeciesId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -57,8 +60,11 @@ namespace PetaVerseApi.Core.Migrations
 
             modelBuilder.Entity("PetaVerseApi.Core.Entities.Breed", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("BreedDescription")
                         .IsRequired()
@@ -97,9 +103,8 @@ namespace PetaVerseApi.Core.Migrations
                     b.Property<double>("MinimunSize")
                         .HasColumnType("float");
 
-                    b.Property<string>("SpeciesId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("SpeciesId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -110,8 +115,11 @@ namespace PetaVerseApi.Core.Migrations
 
             modelBuilder.Entity("PetaVerseApi.Core.Entities.PetaverseMedia", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("MediaUrl")
                         .IsRequired()
@@ -130,8 +138,11 @@ namespace PetaVerseApi.Core.Migrations
 
             modelBuilder.Entity("PetaVerseApi.Core.Entities.PetShorts", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<bool>("IsSpam")
                         .HasColumnType("bit");
@@ -139,14 +150,14 @@ namespace PetaVerseApi.Core.Migrations
                     b.Property<int>("Like")
                         .HasColumnType("int");
 
-                    b.Property<string>("MediaId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int?>("MediaId")
+                        .HasColumnType("int");
 
-                    b.Property<string>("PetId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int?>("PetId")
+                        .HasColumnType("int");
 
-                    b.Property<string>("PublisherId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int?>("PublisherId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -165,8 +176,11 @@ namespace PetaVerseApi.Core.Migrations
 
             modelBuilder.Entity("PetaVerseApi.Core.Entities.Role", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -179,8 +193,11 @@ namespace PetaVerseApi.Core.Migrations
 
             modelBuilder.Entity("PetaVerseApi.Core.Entities.Shedding", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("Info")
                         .IsRequired()
@@ -196,8 +213,11 @@ namespace PetaVerseApi.Core.Migrations
 
             modelBuilder.Entity("PetaVerseApi.Core.Entities.Species", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -214,8 +234,11 @@ namespace PetaVerseApi.Core.Migrations
 
             modelBuilder.Entity("PetaVerseApi.Core.Entities.Status", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("Content")
                         .HasColumnType("nvarchar(max)");
@@ -233,8 +256,8 @@ namespace PetaVerseApi.Core.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -245,8 +268,11 @@ namespace PetaVerseApi.Core.Migrations
 
             modelBuilder.Entity("PetaVerseApi.Core.Entities.Temperament", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("Info")
                         .IsRequired()
@@ -262,8 +288,11 @@ namespace PetaVerseApi.Core.Migrations
 
             modelBuilder.Entity("PetaVerseApi.Core.Entities.User", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("CoverImageUrl")
                         .HasColumnType("nvarchar(max)");
@@ -317,16 +346,17 @@ namespace PetaVerseApi.Core.Migrations
 
             modelBuilder.Entity("PetaVerseApi.Core.Entities.UserAnimal", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                    b.Property<string>("AnimalId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("AnimalId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -339,16 +369,17 @@ namespace PetaVerseApi.Core.Migrations
 
             modelBuilder.Entity("PetaVerseApi.Core.Entities.UserRole", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                    b.Property<string>("RoleId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
