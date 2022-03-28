@@ -12,5 +12,6 @@ namespace PetaVerseApi.Repository
     public class AnimalRepository : BaseRepository<Animal>, IAnimalRepository
     {
         public AnimalRepository(ApplicationDbContext context) : base(context) { }
+
     }
 }

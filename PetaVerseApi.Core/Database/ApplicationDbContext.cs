@@ -63,6 +63,18 @@ namespace PetaVerseApi.Core.Database
                 entity.Property(a => a.Name)
                       .IsRequired()
                       .HasMaxLength(50);
+
+                entity.HasOne(a => a.Species)
+                      .WithMany(s => s.Animals)
+                      .HasForeignKey(a => a.SpeciesId)
+                      .IsRequired()
+                      .OnDelete(DeleteBehavior.NoAction);
+
+                entity.HasOne(a => a.Breed)
+                      .WithMany(b => b.Animals)
+                      .HasForeignKey(a => a.BreedId)
+                      .IsRequired()
+                      .OnDelete(DeleteBehavior.NoAction);
             });
 
             builder.Entity<Status>(entity =>
@@ -79,8 +91,8 @@ namespace PetaVerseApi.Core.Database
 
             builder.Entity<Breed>(entity => 
             {
-                entity.HasOne(s => s.Species)
-                      .WithMany(b => b.Breeds)
+                entity.HasOne(b => b.Species)
+                      .WithMany(s => s.Breeds)
                       .HasForeignKey(b => b.SpeciesId)
                       .IsRequired()
                       .OnDelete(DeleteBehavior.Cascade);
