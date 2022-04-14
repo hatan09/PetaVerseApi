@@ -24,9 +24,9 @@ namespace PetaVerseApi.Repository
         public virtual IQueryable<T> FindAll(Expression<Func<T, bool>>? predicate = null)
             => _dbSet.WhereIf(predicate != null, predicate!);
 
-        public virtual async Task<T?> FindByIdAsync(int id, CancellationToken cancellationToken)
+        public virtual async Task<T?> FindByIdAsync(int id, CancellationToken cancellationToken = default)
         {
-            return await _dbSet.FindAsync(id);
+            return await _dbSet.FindAsync(id, cancellationToken);
         }
 
         public virtual async Task<T?> FindByNameAsync(string name, CancellationToken cancellationToken = default)

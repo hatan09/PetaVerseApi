@@ -22,6 +22,7 @@ builder.Services.AddScoped<ISheddingRepository, SheddingRepository>();
 builder.Services.AddScoped<IPetShortsRepository, PetShortsRepository>();
 builder.Services.AddScoped<IPetaverseMediaRepository, PetaverseMediaRepository>();
 builder.Services.AddScoped<IBreedRepository, BreedRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 builder.Services.AddCors(options =>
 {
