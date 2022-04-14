@@ -12,8 +12,8 @@ using PetaVerseApi.Core.Database;
 namespace PetaVerseApi.Core.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220328110008_fix")]
-    partial class fix
+    [Migration("20220414140838_raw")]
+    partial class raw
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -341,7 +341,7 @@ namespace PetaVerseApi.Core.Migrations
                     b.HasIndex("Guid")
                         .IsUnique();
 
-                    b.ToTable("User");
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("PetaVerseApi.Core.Entities.UserAnimal", b =>

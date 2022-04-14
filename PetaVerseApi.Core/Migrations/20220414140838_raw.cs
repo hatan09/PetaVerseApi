@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace PetaVerseApi.Core.Migrations
 {
-    public partial class fix : Migration
+    public partial class raw : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -80,7 +80,7 @@ namespace PetaVerseApi.Core.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "User",
+                name: "Users",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -100,7 +100,7 @@ namespace PetaVerseApi.Core.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_User", x => x.Id);
+                    table.PrimaryKey("PK_Users", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -149,9 +149,9 @@ namespace PetaVerseApi.Core.Migrations
                 {
                     table.PrimaryKey("PK_Statuses", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Statuses_User_UserId",
+                        name: "FK_Statuses_Users_UserId",
                         column: x => x.UserId,
-                        principalTable: "User",
+                        principalTable: "Users",
                         principalColumn: "Id");
                 });
 
@@ -174,9 +174,9 @@ namespace PetaVerseApi.Core.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_UserRole_User_UserId",
+                        name: "FK_UserRole_Users_UserId",
                         column: x => x.UserId,
-                        principalTable: "User",
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -235,9 +235,9 @@ namespace PetaVerseApi.Core.Migrations
                         principalTable: "PetaverseMedia",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_PetShorts_User_PublisherId",
+                        name: "FK_PetShorts_Users_PublisherId",
                         column: x => x.PublisherId,
-                        principalTable: "User",
+                        principalTable: "Users",
                         principalColumn: "Id");
                 });
 
@@ -260,9 +260,9 @@ namespace PetaVerseApi.Core.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_UserAnimals_User_UserId",
+                        name: "FK_UserAnimals_Users_UserId",
                         column: x => x.UserId,
-                        principalTable: "User",
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -303,12 +303,6 @@ namespace PetaVerseApi.Core.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_User_Guid",
-                table: "User",
-                column: "Guid",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_UserAnimals_AnimalId",
                 table: "UserAnimals",
                 column: "AnimalId");
@@ -327,6 +321,12 @@ namespace PetaVerseApi.Core.Migrations
                 name: "IX_UserRole_UserId",
                 table: "UserRole",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_Guid",
+                table: "Users",
+                column: "Guid",
+                unique: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -359,7 +359,7 @@ namespace PetaVerseApi.Core.Migrations
                 name: "Role");
 
             migrationBuilder.DropTable(
-                name: "User");
+                name: "Users");
 
             migrationBuilder.DropTable(
                 name: "Breed");
