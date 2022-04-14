@@ -5,7 +5,7 @@ namespace PetaVerseApi.Contract
     public interface IBaseRepository<T> where T : class
     {
         IQueryable<T> FindAll(Expression<Func<T, bool>>? predicate = null);
-        Task<T?> FindByIdAsync(int id, CancellationToken cancellationToken);
+        Task<T?> FindByIdAsync(int id, CancellationToken cancellationToken = default);
         Task<T?> FindByNameAsync(string name, CancellationToken cancellationToken = default);
         void Add(T entity);
         void AddRange(IEnumerable<T> entities);

@@ -8,6 +8,7 @@ using PetaVerseApi.DTOs;
 namespace PetaVerseApi.Controller
 {
     [Route("api/[controller]")]
+    [ApiController]
     public class BreedController : ControllerBase
     {
         private readonly IBreedRepository _breedRepository;
@@ -39,9 +40,9 @@ namespace PetaVerseApi.Controller
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update([FromBody] BreedDTO dto, int id , CancellationToken cancellationToken = default)
+        public async Task<IActionResult> Update([FromBody] BreedDTO dto, CancellationToken cancellationToken = default)
         {
-            var breed = await _breedRepository.FindByIdAsync(id, cancellationToken);
+            var breed = await _breedRepository.FindByIdAsync(dto.Id, cancellationToken);
             if (breed is null)
                 return NotFound();
 

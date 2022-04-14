@@ -339,7 +339,7 @@ namespace PetaVerseApi.Core.Migrations
                     b.HasIndex("Guid")
                         .IsUnique();
 
-                    b.ToTable("User");
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("PetaVerseApi.Core.Entities.UserAnimal", b =>

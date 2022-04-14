@@ -9,12 +9,19 @@ namespace PetaVerseApi.DTOs.Mapping
         public MappingProfile()
         {
             CreateMap<Breed, BreedDTO>();
+            //CreateMap<Breed, int>().ConvertUsing(b => b.Id);
             CreateMap<BreedDTO, Breed>()
                 .ForMember(b => b.Id, opt => opt.Ignore());
 
-            CreateMap<Species, SpeciesDTO>();
+            CreateMap<Species, SpeciesDTO>()
+                .ForMember(s => s.Breeds, opt => opt.MapFrom(s => s.Breeds.Select(b => b.Id)));
             CreateMap<SpeciesDTO, Species>()
-                .ForMember(s => s.Id, opt => opt.Ignore());
+                .ForMember(s => s.Id, opt => opt.Ignore())
+                .ForMember(s => s.Breeds, opt => opt.Ignore());
+
+            CreateMap<PetShorts, PetShortsDTO>();
+            CreateMap<PetShortsDTO, PetShorts>()
+                .ForMember(p => p.Id, opt => opt.Ignore());
 
             CreateMap<Animal, AnimalDTO>();
             CreateMap<AnimalDTO, Animal>()

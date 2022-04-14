@@ -13,6 +13,7 @@ namespace PetaVerseApi.Core.Database
         public virtual DbSet<Temperament>   Temperaments    { get; set; } = null!;
         public virtual DbSet<Shedding>      Sheddings       { get; set; } = null!;
         public virtual DbSet<PetShorts>     PetShorts       { get; set; } = null!;
+        public virtual DbSet<User>          Users           { get; set; } = null!;
         
 
 
