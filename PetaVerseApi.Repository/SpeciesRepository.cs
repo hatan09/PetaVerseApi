@@ -18,5 +18,6 @@ namespace PetaVerseApi.Repository
         public override async Task<Species?> FindByIdAsync(int id, CancellationToken cancellationToken = default)
             => await FindAll(b => b.Id == id)
                     .FirstOrDefaultAsync(cancellationToken);
+
     }
 }
