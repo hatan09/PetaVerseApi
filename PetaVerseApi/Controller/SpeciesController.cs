@@ -93,7 +93,7 @@ namespace PetaVerseApi.Controller
                 {
                     var foundBreed = await _breedRepository.FindByIdAsync(dto.Id, cancellationToken);
                     if (foundBreed is null)
-                        return NotFound($"AuthorGuid {breed} not found");
+                        return NotFound($"AuthorGuid {breeds} not found");
 
                     breeds.Add(foundBreed);
                 }
