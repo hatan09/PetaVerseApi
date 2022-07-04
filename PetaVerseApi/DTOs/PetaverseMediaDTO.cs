@@ -4,6 +4,10 @@
     {
         public string       MediaUrl    { get; set; } = string.Empty;
         public DateTime     TimeUpload  { get; set; }
-        public string       Type        { get; set; } = string.Empty ;
+        public MediaType    Type        { get; set; }
+    }
+    public enum MediaType
+    {
+        Video, Photo
     }
 }
