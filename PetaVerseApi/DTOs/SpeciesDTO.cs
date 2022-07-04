@@ -9,6 +9,7 @@ namespace PetaVerseApi.DTOs
         public string   Name            { get; set; } = string.Empty;
         public string   Description     { get; set; } = string.Empty;
 
-        public virtual ICollection<int>   Breeds     { get; set; } = Array.Empty<int>(); 
+        public virtual ICollection<int>     Breeds     { get; set; } = Array.Empty<int>();
+        public virtual ICollection<int>     Animals    { get; set; } = Array.Empty<int>();
     }
 }
