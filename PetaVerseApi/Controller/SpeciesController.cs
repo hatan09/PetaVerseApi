@@ -12,11 +12,13 @@ namespace PetaVerseApi.Controller
     public class SpeciesController : ControllerBase
     {
         private readonly IBreedRepository _breedRepository;
-        private readonly IMapper _mapper;
+        private readonly IAnimalRepository _animalRepository;
         private readonly ISpeciesRepository _speciesRepository;
+        private readonly IMapper _mapper;
 
-        public SpeciesController(ISpeciesRepository speciesRepository, IBreedRepository breedRepository, IMapper mapper)
+        public SpeciesController(IAnimalRepository animalRepository, ISpeciesRepository speciesRepository, IBreedRepository breedRepository, IMapper mapper)
         {
+            _animalRepository = animalRepository;
             _speciesRepository = speciesRepository;
             _breedRepository = breedRepository;
             _mapper = mapper;
@@ -52,6 +54,14 @@ namespace PetaVerseApi.Controller
 
                 species.Breeds.Add(foundBreed);
             }
+            foreach (var animals in dto.Animals)
+            {
+                var foundAnimal = await _animalRepository.FindByIdAsync(dto.Id, cancellationToken);
+                if (foundAnimal is null)
+                    return NotFound($"AuthorGuid {animals} not found");
+
+                species.Animals.Add(foundAnimal);
+            }
             _speciesRepository.Add(species);
 
             await _speciesRepository.SaveChangesAsync(cancellationToken);
@@ -68,11 +78,18 @@ namespace PetaVerseApi.Controller
             _mapper.Map(dto, species);
 
             ICollection<Breed> breeds = species.Breeds;
+            ICollection<Animal> animals = species.Animals;
+            //want to delete
             ICollection<int> requestBreeds = dto.Breeds;
+            ICollection<int> requestAnimals = dto.Animals;
+            //original one
             ICollection<int> originalBreeds = species.Breeds.Select(s => s.Id).ToList();
-
-            // Delete breed from species
+            ICollection<int> originalAnimals = species.Animals.Select(s => s.Id).ToList();
+            //deleted
             ICollection<int> deleteBreeds = originalBreeds.Except(requestBreeds).ToList();
+            ICollection<int> deleteAnimals = originalAnimals.Except(requestAnimals).ToList();
+
+            // Delete from species
             if (deleteBreeds.Count > 0)
             {
                 foreach (var breed in deleteBreeds)
@@ -85,7 +102,19 @@ namespace PetaVerseApi.Controller
                 }
             }
 
-            // Add new breed to species
+            if (deleteAnimals.Count > 0)
+            {
+                foreach (var animal in deleteAnimals)
+                {
+                    var foundAnimal = await _animalRepository.FindByIdAsync(dto.Id, cancellationToken);
+                    if (foundAnimal is null)
+                        return NotFound($"AuthorGuid {animals} not found");
+
+                    animals.Remove(foundAnimal);
+                }
+            }
+
+            // Add new one to species
             ICollection<int> newBreeds = requestBreeds.Except(originalBreeds).ToList();
             if (newBreeds.Count > 0)
             {
@@ -96,6 +125,60 @@ namespace PetaVerseApi.Controller
                         return NotFound($"AuthorGuid {breeds} not found");
 
                     breeds.Add(foundBreed);
+                }
+            }
+
+            ICollection<int> newAnimals = requestAnimals.Except(originalAnimals).ToList();
+            if (newAnimals.Count > 0)
+            {
+                foreach (var animal in newAnimals)
+                {
+                    var foundAnimal = await _animalRepository.FindByIdAsync(dto.Id, cancellationToken);
+                    if (foundAnimal is null)
+                        return NotFound($"AuthorGuid {animals} not found");
+
+                    animals.Add(foundAnimal);
+                }
+            }
+
+            await _speciesRepository.SaveChangesAsync(cancellationToken);
+            return NoContent();
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> UpdateAnimal([FromBody] SpeciesDTO dto, CancellationToken cancellationToken = default)
+        {
+            var species = await _speciesRepository.FindByIdAsync(dto.Id, cancellationToken);
+            if (species is null)
+                return NotFound();
+
+            ICollection<Animal> animals = species.Animals;
+            ICollection<int> requestAnimals = dto.Animals;
+            ICollection<int> originalAnimals = species.Animals.Select(s => s.Id).ToList();
+            ICollection<int> deleteAnimals = originalAnimals.Except(requestAnimals).ToList();
+
+            if (deleteAnimals.Count > 0)
+            {
+                foreach (var animal in deleteAnimals)
+                {
+                    var foundAnimal = await _animalRepository.FindByIdAsync(dto.Id, cancellationToken);
+                    if (foundAnimal is null)
+                        return NotFound($"AuthorGuid {animals} not found");
+
+                    animals.Remove(foundAnimal);
+                }
+            }
+
+            ICollection<int> newAnimals = requestAnimals.Except(originalAnimals).ToList();
+            if (newAnimals.Count > 0)
+            {
+                foreach (var animal in newAnimals)
+                {
+                    var foundAnimal = await _animalRepository.FindByIdAsync(dto.Id, cancellationToken);
+                    if (foundAnimal is null)
+                        return NotFound($"AuthorGuid {animals} not found");
+
+                    animals.Add(foundAnimal);
                 }
             }
 
