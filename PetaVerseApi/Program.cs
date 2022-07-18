@@ -14,15 +14,15 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlSer
 builder.Services.AddSwaggerGen(options => options.SwaggerDoc("v1", new OpenApiInfo { Title = "PetaVerseApi", Version = "v1" }));
 builder.Services.AddControllers();
 
-builder.Services.AddScoped<IAnimalRepository, AnimalRepository>();
-builder.Services.AddScoped<IStatusRepository, StatusRepository>();
-builder.Services.AddScoped<ITemperamentRepository, TemperamentRepository>();
-builder.Services.AddScoped<ISpeciesRepository, SpeciesRepository>();
-builder.Services.AddScoped<ISheddingRepository, SheddingRepository>();
-builder.Services.AddScoped<IPetShortsRepository, PetShortsRepository>();
-builder.Services.AddScoped<IPetaverseMediaRepository, PetaverseMediaRepository>();
-builder.Services.AddScoped<IBreedRepository, BreedRepository>();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IAnimalRepository, AnimalRepository>()
+                .AddScoped<IStatusRepository, StatusRepository>()
+                .AddScoped<ITemperamentRepository, TemperamentRepository>()
+                .AddScoped<ISpeciesRepository, SpeciesRepository>()
+                .AddScoped<ISheddingRepository, SheddingRepository>()
+                .AddScoped<IPetShortsRepository, PetShortsRepository>()
+                .AddScoped<IPetaverseMediaRepository, PetaverseMediaRepository>()
+                .AddScoped<IBreedRepository, BreedRepository>()
+                .AddScoped<IUserRepository, UserRepository>();
 
 builder.Services.AddCors(options =>
 {

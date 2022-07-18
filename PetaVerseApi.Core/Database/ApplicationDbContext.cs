@@ -6,14 +6,15 @@ namespace PetaVerseApi.Core.Database
     public class ApplicationDbContext : DbContext
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
-        public virtual DbSet<Animal>        Animals         { get; set; } = null!;
-        public virtual DbSet<UserAnimal>    UserAnimals     { get; set; } = null!;
-        public virtual DbSet<Status>        Statuses        { get; set; } = null!;
-        public virtual DbSet<Species>       Species         { get; set; } = null!;
-        public virtual DbSet<Temperament>   Temperaments    { get; set; } = null!;
-        public virtual DbSet<Shedding>      Sheddings       { get; set; } = null!;
-        public virtual DbSet<PetShorts>     PetShorts       { get; set; } = null!;
-        public virtual DbSet<User>          Users           { get; set; } = null!;
+        public virtual DbSet<Animal>            Animals         { get; set; } = null!;
+        public virtual DbSet<UserAnimal>        UserAnimals     { get; set; } = null!;
+        public virtual DbSet<Status>            Statuses        { get; set; } = null!;
+        public virtual DbSet<Species>           Species         { get; set; } = null!;
+        public virtual DbSet<Temperament>       Temperaments    { get; set; } = null!;
+        public virtual DbSet<Shedding>          Sheddings       { get; set; } = null!;
+        public virtual DbSet<PetShorts>         PetShorts       { get; set; } = null!;
+        public virtual DbSet<User>              Users           { get; set; } = null!;
+        public virtual DbSet<PetaverseMedia>    PetaverseMedia  { get; set; } = null!;
         
 
 

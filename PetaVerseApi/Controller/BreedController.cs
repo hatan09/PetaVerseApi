@@ -30,7 +30,7 @@ namespace PetaVerseApi.Controller
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(BreedDTO dto, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> Create([FromBody] BreedDTO dto, CancellationToken cancellationToken = default)
         {
             var breed = _mapper.Map<Breed>(dto);
             _breedRepository.Add(breed);

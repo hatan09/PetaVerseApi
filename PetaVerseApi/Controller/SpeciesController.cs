@@ -12,11 +12,13 @@ namespace PetaVerseApi.Controller
     public class SpeciesController : ControllerBase
     {
         private readonly IBreedRepository _breedRepository;
-        private readonly IMapper _mapper;
+        private readonly IAnimalRepository _animalRepository;
         private readonly ISpeciesRepository _speciesRepository;
+        private readonly IMapper _mapper;
 
-        public SpeciesController(ISpeciesRepository speciesRepository, IBreedRepository breedRepository, IMapper mapper)
+        public SpeciesController(IAnimalRepository animalRepository, ISpeciesRepository speciesRepository, IBreedRepository breedRepository, IMapper mapper)
         {
+            _animalRepository = animalRepository;
             _speciesRepository = speciesRepository;
             _breedRepository = breedRepository;
             _mapper = mapper;

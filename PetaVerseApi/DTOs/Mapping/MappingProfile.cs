@@ -8,6 +8,11 @@ namespace PetaVerseApi.DTOs.Mapping
     {
         public MappingProfile()
         {
+            CreateMap<PetaverseMedia, PetaverseMediaDTO>();
+                //.ForMember(p => p.Type, opt => opt.MapFrom(p => p.Type.ToString()));
+            CreateMap<PetaverseMediaDTO, PetaverseMedia>()
+                .ForMember(p => p.Id, opt => opt.Ignore());
+
             CreateMap<Breed, BreedDTO>();
             //CreateMap<Breed, int>().ConvertUsing(b => b.Id);
             CreateMap<BreedDTO, Breed>()
