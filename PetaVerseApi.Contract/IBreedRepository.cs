@@ -2,7 +2,5 @@
 
 namespace PetaVerseApi.Contract
 {
-    public interface IBreedRepository : IBaseRepository<Breed>
-    {
-    }
+    public interface IBreedRepository : IBaseRepository<Breed>{}
 }

@@ -60,6 +60,21 @@ namespace PetaVerseApi.Core.Database
                       .OnDelete(DeleteBehavior.Cascade);
             });
 
+            builder.Entity<AnimalPetaverseMedia>(entity =>
+            {
+                entity.HasOne(apm => apm.Animal)
+                      .WithMany(a => a.AnimalPetaverseMedias)
+                      .HasForeignKey(apm => apm.AnimalId)
+                      .IsRequired()
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(apm => apm.PetaverseMedia)
+                      .WithMany(pm => pm.AnimalPetaverseMedias)
+                      .HasForeignKey(apm => apm.PetaverMediaId)
+                      .IsRequired()
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
+
             builder.Entity<Animal>(entity => 
             {
                 entity.Property(a => a.Name)

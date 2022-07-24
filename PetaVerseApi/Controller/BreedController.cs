@@ -7,9 +7,7 @@ using PetaVerseApi.DTOs;
 
 namespace PetaVerseApi.Controller
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class BreedController : ControllerBase
+    public class BreedController : BaseController
     {
         private readonly IBreedRepository _breedRepository;
         private readonly IMapper _mapper;

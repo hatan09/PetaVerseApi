@@ -21,7 +21,7 @@ namespace PetaVerseApi.Repository
 
         public virtual async Task<T?> FindByIdAsync(int id, CancellationToken cancellationToken = default)
         {
-            return await _dbSet.FindAsync(id, cancellationToken);
+            return await _dbSet.FindAsync(new object[]{id}, cancellationToken);
         }
 
         public virtual async Task<T?> FindByNameAsync(string name, CancellationToken cancellationToken = default)

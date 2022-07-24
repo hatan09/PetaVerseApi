@@ -5,24 +5,28 @@ using PetaVerseApi.Core.Database;
 using PetaVerseApi.Contract;
 using PetaVerseApi.Repository;
 using PetaVerseApi.DTOs.Mapping;
-
+using PetaVerseApi.AppSettings;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddSwaggerGen(options => options.SwaggerDoc("v1", new OpenApiInfo { Title = "PetaVerseApi", Version = "v1" }));
+builder.Services.Configure<AzureStorageConfig>(builder.Configuration.GetSection("AzureStorageConfig"));
 builder.Services.AddControllers();
 
-builder.Services.AddScoped<IAnimalRepository, AnimalRepository>()
+builder.Services.AddScoped<IUserRepository, UserRepository>()
+                .AddScoped<IBreedRepository, BreedRepository>()
+                .AddScoped<IAnimalRepository, AnimalRepository>()
                 .AddScoped<IStatusRepository, StatusRepository>()
-                .AddScoped<ITemperamentRepository, TemperamentRepository>()
                 .AddScoped<ISpeciesRepository, SpeciesRepository>()
                 .AddScoped<ISheddingRepository, SheddingRepository>()
                 .AddScoped<IPetShortsRepository, PetShortsRepository>()
+                .AddScoped<IUserAnimalRepository, UserAnimalRepository>()
+                .AddScoped<ITemperamentRepository, TemperamentRepository>()
                 .AddScoped<IPetaverseMediaRepository, PetaverseMediaRepository>()
-                .AddScoped<IBreedRepository, BreedRepository>()
-                .AddScoped<IUserRepository, UserRepository>();
+                .AddScoped<IAnimalPetaverseMediaRepository, AnimalPetaverseMediaRepository>();
+
 
 builder.Services.AddCors(options =>
 {
