@@ -96,6 +96,11 @@ namespace PetaVerseApi.Core.Database
 
             builder.Entity<Status>(entity =>
             {
+                entity.HasOne(s => s.User)
+                      .WithMany(u => u.Statuses)
+                      .HasForeignKey(s => s.UserId)
+                      .OnDelete(DeleteBehavior.NoAction);
+
                 entity.Property(s => s.Toppic)
                       .IsRequired()
                       .HasMaxLength(50);
@@ -103,7 +108,6 @@ namespace PetaVerseApi.Core.Database
                 entity.Property(s => s.Title)
                       .IsRequired()
                       .HasMaxLength(200);
-
             });
 
             builder.Entity<Breed>(entity => 

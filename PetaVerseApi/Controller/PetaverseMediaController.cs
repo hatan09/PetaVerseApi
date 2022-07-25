@@ -7,8 +7,6 @@ using PetaVerseApi.DTOs;
 
 namespace PetaVerseApi.Controller
 {
-    [Route("api/[controller]")]
-    [ApiController]
     public class PetaverseMediaController : ControllerBase
     {
         private readonly IPetaverseMediaRepository _petaverseMediaRepository;

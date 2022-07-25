@@ -2,9 +2,9 @@
 {
     public class AzureStorageConfig
     {
-        public string AccountName { get; set; }
-        public string AccountKey { get; set; }
-        public string ImageContainer { get; set; }
-        public string ThumbnailContainer { get; set; }
+        public string   AccountName         { get; set; } = String.Empty;
+        public string   AccountKey          { get; set; } = String.Empty;
+        public string   ImageContainer      { get; set; } = String.Empty;
+        public string   ThumbnailContainer  { get; set; } = String.Empty;
     }
 }

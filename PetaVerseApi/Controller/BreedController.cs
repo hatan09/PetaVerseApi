@@ -12,12 +12,17 @@ namespace PetaVerseApi.Controller
         private readonly IBreedRepository _breedRepository;
         private readonly IMapper _mapper;
         private readonly ISpeciesRepository _speciesRepository;
+        private readonly IAnimalRepository _animalRepository;
 
-        public BreedController(ISpeciesRepository speciesRepository, IBreedRepository breedRepository, IMapper mapper)
+        public BreedController(ISpeciesRepository speciesRepository, 
+                               IBreedRepository breedRepository,
+                               IMapper mapper,
+                               IAnimalRepository animalRepository)
         {
             _speciesRepository = speciesRepository;
             _breedRepository = breedRepository;
             _mapper = mapper;
+            _animalRepository = animalRepository;
         }
 
         [HttpGet]
@@ -31,6 +36,15 @@ namespace PetaVerseApi.Controller
         public async Task<IActionResult> Create([FromBody] BreedDTO dto, CancellationToken cancellationToken = default)
         {
             var breed = _mapper.Map<Breed>(dto);
+
+            foreach (var animals in dto.Animals)
+            {
+                var foundAnimal = await _animalRepository.FindByIdAsync(dto.Id, cancellationToken);
+                if (foundAnimal is null)
+                    return NotFound($"AuthorGuid {animals} not found");
+
+                breed.Animals.Add(foundAnimal);
+            }
             _breedRepository.Add(breed);
 
             await _breedRepository.SaveChangesAsync(cancellationToken);

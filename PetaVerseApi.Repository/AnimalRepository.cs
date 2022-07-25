@@ -14,8 +14,9 @@ namespace PetaVerseApi.Repository
         public override async Task<Animal?> FindByIdAsync(int id, CancellationToken cancellationToken = default)
             => await FindAll(b => b.Id == id)
                     .FirstOrDefaultAsync(cancellationToken);
-        public override IQueryable<Animal> FindAll(Expression<Func<Animal, bool>>? predicate = null)
-            => _dbSet.WhereIf(predicate != null, predicate!)
-                     .Include(b => b.Species);
+
+        //public override IQueryable<Animal> FindAll(Expression<Func<Animal, bool>>? predicate = null)
+        //    => _dbSet.WhereIf(predicate != null, predicate!)
+        //             .Include(b => b.Species);
     }
 }
