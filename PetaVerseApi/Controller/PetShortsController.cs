@@ -7,9 +7,7 @@ using PetaVerseApi.DTOs;
 
 namespace PetaVerseApi.Controller
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class PetShortsController : ControllerBase
+    public class PetShortsController : BaseController
     {
         private readonly IUserRepository _userRepository;
         private readonly IPetaverseMediaRepository _mediaRepository;

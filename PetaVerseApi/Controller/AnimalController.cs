@@ -15,7 +15,7 @@ namespace PetaVerseApi.Controller
     public class AnimalController : BaseController
     {
         private readonly IMapper                         _mapper;
-        private readonly AzureStorageConfig              _storageConfig = null;
+        private readonly AzureStorageConfig              _storageConfig = null!;
         private readonly IAnimalRepository               _animalRepository;
         private readonly ISpeciesRepository              _speciesRepository;
         private readonly IBreedRepository                _breedRepository;
@@ -48,19 +48,20 @@ namespace PetaVerseApi.Controller
         [HttpGet]
         public async Task<IActionResult> GetAll(CancellationToken cancellationToken = default)
         {
-            var breed = await _animalRepository.FindAll().ToListAsync(cancellationToken);
-            return Ok(_mapper.Map<IEnumerable<AnimalDTO>>(breed));
+            var animals = await _animalRepository.FindAll().ToListAsync(cancellationToken);
+            return Ok(_mapper.Map<IEnumerable<AnimalDTO>>(animals));
         }
 
-        //This is not working
-        [HttpGet("{animalId}")]
-        public async Task<IActionResult> GetById(int animalId, CancellationToken cancellationToken = default)
+
+        [HttpGet("{AnimalId}")]
+        public async Task<IActionResult> GetById(int Id, CancellationToken cancellationToken = default)
         {
-            var animal = await _animalRepository.FindByIdAsync(animalId, cancellationToken);
-            return animal != null ? Ok(_mapper.Map<Animal>(animal)) : NotFound("Unable to find the requested animal"); 
+            var animals = await _animalRepository.FindByIdAsync(Id, cancellationToken);
+            return animals != null ? Ok(_mapper.Map<AnimalDTO>(animals)) : NotFound("Unable to find the requested animal"); 
         }
 
-        [HttpGet("{userId}")]
+
+        [HttpGet("{UserId}")]
         public async Task<IActionResult> GetAllByUserId(int userId, CancellationToken cancellationToken = default)
         {
             //Check if user exist
@@ -92,6 +93,26 @@ namespace PetaVerseApi.Controller
             else return NotFound("User invalid");
         }
 
+        [HttpGet("Thumbnails")]
+        public async Task<IActionResult> GetThumbNails()
+        {
+            try
+            {
+                if (_storageConfig.AccountKey == string.Empty || _storageConfig.AccountName == string.Empty)
+                    return BadRequest("Sorry, can't retrieve your Azure storage details from appsettings.js, make sure that you add Azure storage details there.");
+
+                if (_storageConfig.ImageContainer == string.Empty)
+                    return BadRequest("Please provide a name for your image container in Azure blob storage.");
+
+                List<string> thumbnailUrls = await StorageHelper.GetThumbNailUrls(_storageConfig);
+                return new ObjectResult(thumbnailUrls);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] AnimalDTO dto, CancellationToken cancellationToken = default)
         {
@@ -102,7 +123,7 @@ namespace PetaVerseApi.Controller
             return Ok(_mapper.Map<AnimalDTO>(animal));
         }
 
-        [HttpPost("{petId}"), DisableRequestSizeLimit]
+        [HttpPost("{PetId}"), DisableRequestSizeLimit]
         public async Task<IActionResult> UploadAnimalMedias(int petId, List<IFormFile> medias, CancellationToken cancellationToken)
         {
             var pet = await _animalRepository.FindByIdAsync(petId, cancellationToken);
@@ -174,28 +195,7 @@ namespace PetaVerseApi.Controller
             return Ok("Gotem !");
         }
 
-
-        [HttpGet("thumbnails")]
-        public async Task<IActionResult> GetThumbNails()
-        {
-            try
-            {
-                if (_storageConfig.AccountKey == string.Empty || _storageConfig.AccountName == string.Empty)
-                    return BadRequest("Sorry, can't retrieve your Azure storage details from appsettings.js, make sure that you add Azure storage details there.");
-
-                if (_storageConfig.ImageContainer == string.Empty)
-                    return BadRequest("Please provide a name for your image container in Azure blob storage.");
-
-                List<string> thumbnailUrls = await StorageHelper.GetThumbNailUrls(_storageConfig);
-                return new ObjectResult(thumbnailUrls);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-        [HttpPut("{id}")]
+        [HttpPut("{Id}")]
         public async Task<IActionResult> Update([FromBody] BreedDTO dto, int id, CancellationToken cancellationToken = default)
         {
             var breed = await _animalRepository.FindByIdAsync(id, cancellationToken);
