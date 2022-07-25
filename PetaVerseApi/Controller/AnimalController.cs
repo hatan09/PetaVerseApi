@@ -55,7 +55,7 @@ namespace PetaVerseApi.Controller
 
 
         [HttpGet("{AnimalId}")]
-        public async Task<IActionResult> GetById(int Id, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> GetById(int AnimalId, CancellationToken cancellationToken = default)
         {
             var animals = await _animalRepository.FindByIdAsync(Id, cancellationToken);
             return animals != null ? Ok(_mapper.Map<AnimalDTO>(animals)) : NotFound("Unable to find the requested animal"); 
