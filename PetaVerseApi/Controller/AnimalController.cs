@@ -7,6 +7,7 @@ using PetaVerseApi.Contract;
 using PetaVerseApi.Core.Entities;
 using PetaVerseApi.DTOs;
 using PetaVerseApi.Helpers;
+using PetaVerseApi.Interfaces;
 using System.Collections.Generic;
 using MediaType = PetaVerseApi.Core.Entities.MediaType;
 
@@ -15,17 +16,17 @@ namespace PetaVerseApi.Controller
     public class AnimalController : BaseController
     {
         private readonly IMapper                         _mapper;
-        private readonly AzureStorageConfig              _storageConfig = null;
+        private readonly IMediaService                   _mediaService;
+        private readonly IUserRepository                 _userRepository;
+        private readonly IBreedRepository                _breedRepository;
         private readonly IAnimalRepository               _animalRepository;
         private readonly ISpeciesRepository              _speciesRepository;
-        private readonly IBreedRepository                _breedRepository;
-        private readonly IUserRepository                 _userRepository;
         private readonly IUserAnimalRepository           _userAnimalRepository;
         private readonly IPetaverseMediaRepository       _petaverseMediaRepository;
         private readonly IAnimalPetaverseMediaRepository _animalPetaverseMediaRepository;
 
         public AnimalController(IMapper mapper,
-                                IOptions<AzureStorageConfig> config,
+                                IMediaService mediaService, 
                                 IUserRepository userRepository,
                                 IBreedRepository breedRepository,
                                 IAnimalRepository animalRepository,
@@ -35,7 +36,7 @@ namespace PetaVerseApi.Controller
                                 IAnimalPetaverseMediaRepository animalPetaverseMediaRepository)
         {
             _mapper                         = mapper;
-            _storageConfig                  = config.Value;
+            _mediaService                   = mediaService;
             _userRepository                 = userRepository;
             _breedRepository                = breedRepository;
             _animalRepository               = animalRepository;
@@ -57,7 +58,8 @@ namespace PetaVerseApi.Controller
         public async Task<IActionResult> GetById(int animalId, CancellationToken cancellationToken = default)
         {
             var animal = await _animalRepository.FindByIdAsync(animalId, cancellationToken);
-            return animal != null ? Ok(_mapper.Map<Animal>(animal)) : NotFound("Unable to find the requested animal"); 
+            return animal != null ? Ok(_mapper.Map<Animal>(animal))
+                : NotFound("Unable to find the requested animal"); 
         }
 
         [HttpGet("{userId}")]
@@ -102,6 +104,26 @@ namespace PetaVerseApi.Controller
             return Ok(_mapper.Map<AnimalDTO>(animal));
         }
 
+        [HttpPost]
+        public async Task<IActionResult> UploadPetAvatar(IFormFile avatar)
+        {
+            if (_mediaService.IsImage(avatar))
+            {
+                using(Stream stream = avatar.OpenReadStream())
+                {
+                    Tuple<bool, string> result = await _mediaService.UploadAvatarToStorage(stream, avatar.FileName);
+                    var isUploaded = result.Item1;
+                    var stringUrl = result.Item2;
+                    if (isUploaded && !String.IsNullOrEmpty(stringUrl))
+                    {
+                        return Ok(stringUrl);
+                    }
+                    else return BadRequest("Look like the image couldnt upload to the storage");
+                }
+            }
+            else return new UnsupportedMediaTypeResult();
+        }
+
         [HttpPost("{petId}"), DisableRequestSizeLimit]
         public async Task<IActionResult> UploadAnimalMedias(int petId, List<IFormFile> medias, CancellationToken cancellationToken)
         {
@@ -110,29 +132,28 @@ namespace PetaVerseApi.Controller
                 return NotFound("Not Found This Pet");
             else
             {
-                bool isUploaded = false;
-
+                var uploadedPetPhotos = new List<PetaverseMediaDTO>();
                 try
                 {
                     if (medias.Count == 0)
                         return BadRequest("No medias received from the upload");
 
-                    if (_storageConfig.AccountKey == string.Empty || _storageConfig.AccountName == string.Empty)
-                        return BadRequest("sorry, can't retrieve your azure storage details from appsettings.js, make sure that you add azure storage details there");
+                    //if (_storageConfig.AccountKey == string.Empty || _storageConfig.AccountName == string.Empty)
+                    //    return BadRequest("sorry, can't retrieve your azure storage details from appsettings.js, make sure that you add azure storage details there");
 
-                    if (_storageConfig.ImageContainer == string.Empty)
-                        return BadRequest("Please provide a name for your image container in the azure blob storage");
+                    //if (_storageConfig.ImageContainer == string.Empty)
+                    //    return BadRequest("Please provide a name for your image container in the azure blob storage");
 
                     foreach (var formFile in medias)
                     {
-                        if (StorageHelper.IsImage(formFile))
+                        if (_mediaService.IsImage(formFile))
                         {
                             if (formFile.Length > 0)
                             {
                                 using (Stream stream = formFile.OpenReadStream())
                                 {
-                                    Tuple<bool, string> result = await StorageHelper.UploadFileToStorage(stream, formFile.FileName, _storageConfig);
-                                    isUploaded = result.Item1;
+                                    Tuple<bool, string> result = await _mediaService.UploadFileToStorage(stream, formFile.FileName);
+                                    var isUploaded = result.Item1;
                                     var stringUrl = result.Item2;
 
                                     if (isUploaded && !String.IsNullOrEmpty(stringUrl))
@@ -154,7 +175,12 @@ namespace PetaVerseApi.Controller
                                         });
                                         await _animalPetaverseMediaRepository.SaveChangesAsync(cancellationToken);
 
-
+                                        uploadedPetPhotos.Add(new PetaverseMediaDTO() 
+                                        {
+                                            Id = petaverseMedia.Id,
+                                            MediaUrl = stringUrl,
+                                            Type = DTOs.MediaType.Photo
+                                        });
                                     } else return BadRequest("Look like the image couldnt upload to the storage");
                                 }
                             }
@@ -170,30 +196,30 @@ namespace PetaVerseApi.Controller
                 {
                     return BadRequest(ex.Message);
                 }
-            }
-            return Ok("Gotem !");
-        }
-
-
-        [HttpGet("thumbnails")]
-        public async Task<IActionResult> GetThumbNails()
-        {
-            try
-            {
-                if (_storageConfig.AccountKey == string.Empty || _storageConfig.AccountName == string.Empty)
-                    return BadRequest("Sorry, can't retrieve your Azure storage details from appsettings.js, make sure that you add Azure storage details there.");
-
-                if (_storageConfig.ImageContainer == string.Empty)
-                    return BadRequest("Please provide a name for your image container in Azure blob storage.");
-
-                List<string> thumbnailUrls = await StorageHelper.GetThumbNailUrls(_storageConfig);
-                return new ObjectResult(thumbnailUrls);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
+                return Ok(uploadedPetPhotos);
             }
         }
+
+
+        //[HttpGet("thumbnails")]
+        //public async Task<IActionResult> GetThumbNails()
+        //{
+        //    try
+        //    {
+        //        if (_storageConfig.AccountKey == string.Empty || _storageConfig.AccountName == string.Empty)
+        //            return BadRequest("Sorry, can't retrieve your Azure storage details from appsettings.js, make sure that you add Azure storage details there.");
+
+        //        if (_storageConfig.ImageContainer == string.Empty)
+        //            return BadRequest("Please provide a name for your image container in Azure blob storage.");
+
+        //        List<string> thumbnailUrls = await StorageHelper.GetThumbNailUrls(_storageConfig);
+        //        return new ObjectResult(thumbnailUrls);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(ex.Message);
+        //    }
+        //}
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update([FromBody] BreedDTO dto, int id, CancellationToken cancellationToken = default)

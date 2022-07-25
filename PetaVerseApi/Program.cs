@@ -6,25 +6,38 @@ using PetaVerseApi.Contract;
 using PetaVerseApi.Repository;
 using PetaVerseApi.DTOs.Mapping;
 using PetaVerseApi.AppSettings;
+using Azure.Storage;
+using Microsoft.Extensions.Options;
+using PetaVerseApi.Interfaces;
+using PetaVerseApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.Configure<AzureStorageConfig>(builder.Configuration.GetSection("AzureStorageConfig"));
 
 // Add services to the container.
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddSwaggerGen(options => options.SwaggerDoc("v1", new OpenApiInfo { Title = "PetaVerseApi", Version = "v1" }));
-builder.Services.Configure<AzureStorageConfig>(builder.Configuration.GetSection("AzureStorageConfig"));
 builder.Services.AddControllers();
 
-builder.Services.AddScoped<IUserRepository, UserRepository>()
-                .AddScoped<IBreedRepository, BreedRepository>()
-                .AddScoped<IAnimalRepository, AnimalRepository>()
-                .AddScoped<IStatusRepository, StatusRepository>()
-                .AddScoped<ISpeciesRepository, SpeciesRepository>()
-                .AddScoped<ISheddingRepository, SheddingRepository>()
-                .AddScoped<IPetShortsRepository, PetShortsRepository>()
-                .AddScoped<IUserAnimalRepository, UserAnimalRepository>()
-                .AddScoped<ITemperamentRepository, TemperamentRepository>()
-                .AddScoped<IPetaverseMediaRepository, PetaverseMediaRepository>()
+builder.Services.AddSingleton((provider) =>
+                  {
+                      var config = provider.GetRequiredService<IOptionsMonitor<AzureStorageConfig>>().CurrentValue;
+                      return new StorageSharedKeyCredential(config.AccountName, config.AccountKey);
+                  });
+
+builder.Services.AddSingleton<IMediaService, AzureBlobStorageMediaService>();
+
+builder.Services.AddScoped<IUserRepository,                 UserRepository>()
+                .AddScoped<IBreedRepository,                BreedRepository>()
+                .AddScoped<IAnimalRepository,               AnimalRepository>()
+                .AddScoped<IStatusRepository,               StatusRepository>()
+                .AddScoped<ISpeciesRepository,              SpeciesRepository>()
+                .AddScoped<ISheddingRepository,             SheddingRepository>()
+                .AddScoped<IPetShortsRepository,            PetShortsRepository>()
+                .AddScoped<IUserAnimalRepository,           UserAnimalRepository>()
+                .AddScoped<ITemperamentRepository,          TemperamentRepository>()
+                .AddScoped<IPetaverseMediaRepository,       PetaverseMediaRepository>()
                 .AddScoped<IAnimalPetaverseMediaRepository, AnimalPetaverseMediaRepository>();
 
 

@@ -21,7 +21,7 @@ namespace PetaVerseApi.Helpers
         }
 
         public static async Task<Tuple<bool, string>> UploadFileToStorage(Stream fileStream, string fileName,
-                                                            AzureStorageConfig _storageConfig)
+                                                                          AzureStorageConfig _storageConfig)
         {
             // Create a URI to the blob
             Uri blobUri = new Uri("https://" +
