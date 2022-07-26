@@ -80,18 +80,6 @@ namespace PetaVerseApi.Core.Database
                 entity.Property(a => a.Name)
                       .IsRequired()
                       .HasMaxLength(50);
-
-                entity.HasOne(a => a.Species)
-                      .WithMany(s => s.Animals)
-                      .HasForeignKey(a => a.SpeciesId)
-                      .IsRequired()
-                      .OnDelete(DeleteBehavior.NoAction);
-
-                entity.HasOne(a => a.Breed)
-                      .WithMany(b => b.Animals)
-                      .HasForeignKey(a => a.BreedId)
-                      .IsRequired()
-                      .OnDelete(DeleteBehavior.NoAction);
             });
 
             builder.Entity<Status>(entity =>

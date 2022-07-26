@@ -12,12 +12,12 @@ namespace PetaVerseApi.Repository
     {
         public UserRepository(ApplicationDbContext context) : base(context) { }
 
-        public async Task<User?> FindByGuidAsync(string guid)
-            => await _dbSet.Where(u => u.Guid == guid).FirstOrDefaultAsync();
+        public async Task<User?> FindByGuidAsync(string guid, CancellationToken cancellationToken)
+            => await _dbSet.FirstOrDefaultAsync(u => u.Guid == guid, cancellationToken);
 
-        public async Task<User?> FindByNameAsync(string userName)
+        public async Task<User?> FindByNameAsync(string userName, CancellationToken cancellationToken)
         {
-            var user = await base.FindByNameAsync(userName);
+            var user = await base.FindByNameAsync(userName, cancellationToken);
             if (user is null || user.IsDeleted)
                 return null;
 

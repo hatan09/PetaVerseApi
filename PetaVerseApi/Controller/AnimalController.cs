@@ -1,14 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using PetaVerseApi.AppSettings;
 using PetaVerseApi.Contract;
 using PetaVerseApi.Core.Entities;
 using PetaVerseApi.DTOs;
-using PetaVerseApi.Helpers;
 using PetaVerseApi.Interfaces;
-using System.Collections.Generic;
 using MediaType = PetaVerseApi.Core.Entities.MediaType;
 
 namespace PetaVerseApi.Controller
@@ -54,22 +50,22 @@ namespace PetaVerseApi.Controller
         }
 
 
-        [HttpGet("{AnimalId}")]
-        public async Task<IActionResult> GetById(int AnimalId, CancellationToken cancellationToken = default)
+        [HttpGet("{animalId}")]
+        public async Task<IActionResult> GetById(int animalId, CancellationToken cancellationToken = default)
         {
-            var animals = await _animalRepository.FindByIdAsync(Id, cancellationToken);
-            return animals != null ? Ok(_mapper.Map<AnimalDTO>(animals)) : NotFound("Unable to find the requested animal"); 
+            var animal = await _animalRepository.FindByIdAsync(animalId, cancellationToken);
+            return animal != null ? Ok(_mapper.Map<AnimalDTO>(animal)) : NotFound("Unable to find the requested animal"); 
         }
 
 
-        [HttpGet("{UserId}")]
-        public async Task<IActionResult> GetAllByUserId(int userId, CancellationToken cancellationToken = default)
+        [HttpGet("{userGuid}")]
+        public async Task<IActionResult> GetAllByUserId(string userGuid, CancellationToken cancellationToken = default)
         {
             //Check if user exist
-            var user = await _userRepository.FindByIdAsync(userId, cancellationToken);
+            var user = await _userRepository.FindByGuidAsync(userGuid, cancellationToken);
             if(user != null){
                 //Get AnimalID
-                var animalIds = await _userAnimalRepository.FindAll(ua => ua.UserId == userId).Select(ua => ua.AnimalId).ToListAsync();
+                var animalIds = await _userAnimalRepository.FindAll(ua => ua.UserId == user.Id).Select(ua => ua.AnimalId).ToListAsync();
                 var animals = new List<AnimalDTO>();
                 animalIds.ForEach(id => 
                 {
@@ -219,27 +215,6 @@ namespace PetaVerseApi.Controller
                 return Ok(uploadedPetPhotos);
             }
         }
-
-
-        //[HttpGet("thumbnails")]
-        //public async Task<IActionResult> GetThumbNails()
-        //{
-        //    try
-        //    {
-        //        if (_storageConfig.AccountKey == string.Empty || _storageConfig.AccountName == string.Empty)
-        //            return BadRequest("Sorry, can't retrieve your Azure storage details from appsettings.js, make sure that you add Azure storage details there.");
-
-        //        if (_storageConfig.ImageContainer == string.Empty)
-        //            return BadRequest("Please provide a name for your image container in Azure blob storage.");
-
-        //        List<string> thumbnailUrls = await StorageHelper.GetThumbNailUrls(_storageConfig);
-        //        return new ObjectResult(thumbnailUrls);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return BadRequest(ex.Message);
-        //    }
-        //}
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update([FromBody] BreedDTO dto, int id, CancellationToken cancellationToken = default)

@@ -2,25 +2,29 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PetaVerseApi.Contract;
-using PetaVerseApi.Core.Entities;
 using PetaVerseApi.DTOs;
-using PetaVerseApi.DTOs.Create;
-using PetaVerseApi.Repository;
 
 namespace PetaVerseApi.Controller
 {
-    [Route("api/[controller]")]
-    public class UserController : ControllerBase
+    public class UserController : BaseController
     {
-        private readonly IUserRepository _userRepository;
-        private readonly IMapper _mapper;
-        private readonly ILogger<UserController> _logger;
+        private readonly IMapper                         _mapper;
+        private readonly IUserRepository                 _userRepository;
+        private readonly IAnimalRepository               _animalRepository;
+        private readonly IUserAnimalRepository           _userAnimalRepository;
+        private readonly IAnimalPetaverseMediaRepository _animalPetaverseMediaRepository;
 
-        public UserController(IUserRepository userRepository, IMapper mapper, ILogger<UserController> logger)
+        public UserController(IMapper mapper, 
+                              IUserRepository userRepository, 
+                              IAnimalRepository animalRepository, 
+                              IUserAnimalRepository userAnimalRepository,
+                              IAnimalPetaverseMediaRepository animalPetaverseMediaRepository)
         {
-            _userRepository = userRepository;
             _mapper = mapper;
-            _logger = logger;
+            _userRepository = userRepository;
+            _animalRepository = animalRepository;
+            _userAnimalRepository = userAnimalRepository;
+            _animalPetaverseMediaRepository = animalPetaverseMediaRepository;
         }
 
         [HttpGet]
@@ -28,6 +32,13 @@ namespace PetaVerseApi.Controller
         {
             var user = await _userRepository.FindAll().ToListAsync(cancellationToken);
             return Ok(_mapper.Map<IEnumerable<UserDTO>>(user));
+        }
+
+        [HttpGet("{userGuid}")]
+        public async Task<IActionResult> GetByUserGuid(string userGuid, CancellationToken cancellationToken = default)
+        {
+            var user = await _userRepository.FindByGuidAsync(userGuid, cancellationToken);
+            return user != null ? Ok(_mapper.Map<UserDTO>(user)) : NotFound("Unable to find the requested user");
         }
     }
 }
