@@ -20,10 +20,10 @@ namespace PetaVerseApi.Controller
                               IUserAnimalRepository userAnimalRepository,
                               IAnimalPetaverseMediaRepository animalPetaverseMediaRepository)
         {
-            _mapper = mapper;
-            _userRepository = userRepository;
-            _animalRepository = animalRepository;
-            _userAnimalRepository = userAnimalRepository;
+            _mapper                         = mapper;
+            _userRepository                 = userRepository;
+            _animalRepository               = animalRepository;
+            _userAnimalRepository           = userAnimalRepository;
             _animalPetaverseMediaRepository = animalPetaverseMediaRepository;
         }
 
