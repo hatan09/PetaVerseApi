@@ -110,7 +110,6 @@ namespace PetaVerseApi.Controller
 
             animal.SixDigitCode = await _animalRepository.Generate6DigitCodeAsync();
             animal.Breed = await _breedRepository.FindByIdAsync(dto.BreedId, cancellationToken);
-            animal.Species = await _speciesRepository.FindByIdAsync(dto.SpeciesId, cancellationToken);
 
             _animalRepository.Add(animal);
             await _animalRepository.SaveChangesAsync(cancellationToken);

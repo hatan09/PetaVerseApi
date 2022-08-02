@@ -52,15 +52,6 @@ namespace PetaVerseApi.Controller
 
                 species.Breeds.Add(foundBreed);
             }
-            
-            foreach (var animals in dto.Animals)
-            {
-                var foundAnimal = await _animalRepository.FindByIdAsync(dto.Id, cancellationToken);
-                if (foundAnimal is null)
-                    return NotFound($"AuthorGuid {animals} not found");
-
-                species.Animals.Add(foundAnimal);
-            }
 
             _speciesRepository.Add(species);
 
