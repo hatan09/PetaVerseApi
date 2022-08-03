@@ -10,11 +10,14 @@ namespace PetaVerseApi.Core.Database
         public virtual DbSet<UserAnimal>        UserAnimals     { get; set; } = null!;
         public virtual DbSet<Status>            Statuses        { get; set; } = null!;
         public virtual DbSet<Species>           Species         { get; set; } = null!;
+        public virtual DbSet<Breed>             Breeds          { get; set; } = null!;
         public virtual DbSet<Temperament>       Temperaments    { get; set; } = null!;
         public virtual DbSet<Shedding>          Sheddings       { get; set; } = null!;
         public virtual DbSet<PetShorts>         PetShorts       { get; set; } = null!;
         public virtual DbSet<User>              Users           { get; set; } = null!;
-        public virtual DbSet<PetaverseMedia>    PetaverseMedia  { get; set; } = null!;
+        public virtual DbSet<Role>              Roles           { get; set; } = null!;
+        public virtual DbSet<UserRole>          UserRoles       { get; set; } = null!;
+        public virtual DbSet<PetaverseMedia>    PetaverseMedias { get; set; } = null!;
         
 
 
@@ -80,6 +83,7 @@ namespace PetaVerseApi.Core.Database
                 entity.Property(a => a.Name)
                       .IsRequired()
                       .HasMaxLength(50);
+
             });
 
             builder.Entity<Status>(entity =>

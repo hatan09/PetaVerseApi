@@ -12,8 +12,8 @@ using PetaVerseApi.Core.Database;
 namespace PetaVerseApi.Core.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220722225549_Animals_Bio")]
-    partial class Animals_Bio
+    [Migration("20220802080239_Petaverse_Milestone1")]
+    partial class Petaverse_Milestone1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -38,7 +38,7 @@ namespace PetaVerseApi.Core.Migrations
                     b.Property<string>("Bio")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("BreedId")
+                    b.Property<int?>("BreedId")
                         .HasColumnType("int");
 
                     b.Property<bool>("Gender")
@@ -49,16 +49,43 @@ namespace PetaVerseApi.Core.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int>("SpeciesId")
-                        .HasColumnType("int");
+                    b.Property<string>("PetAvatar")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PetColor")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SixDigitCode")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("BreedId");
 
-                    b.HasIndex("SpeciesId");
-
                     b.ToTable("Animals");
+                });
+
+            modelBuilder.Entity("PetaVerseApi.Core.Entities.AnimalPetaverseMedia", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("AnimalId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PetaverMediaId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AnimalId");
+
+                    b.HasIndex("PetaverMediaId");
+
+                    b.ToTable("AnimalPetaverseMedia");
                 });
 
             modelBuilder.Entity("PetaVerseApi.Core.Entities.Breed", b =>
@@ -113,7 +140,7 @@ namespace PetaVerseApi.Core.Migrations
 
                     b.HasIndex("SpeciesId");
 
-                    b.ToTable("Breed");
+                    b.ToTable("Breeds");
                 });
 
             modelBuilder.Entity("PetaVerseApi.Core.Entities.PetaverseMedia", b =>
@@ -136,7 +163,7 @@ namespace PetaVerseApi.Core.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("PetaverseMedia");
+                    b.ToTable("PetaverseMedias");
                 });
 
             modelBuilder.Entity("PetaVerseApi.Core.Entities.PetShorts", b =>
@@ -191,7 +218,7 @@ namespace PetaVerseApi.Core.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Role");
+                    b.ToTable("Roles");
                 });
 
             modelBuilder.Entity("PetaVerseApi.Core.Entities.Shedding", b =>
@@ -271,7 +298,7 @@ namespace PetaVerseApi.Core.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int?>("UserId")
+                    b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -327,10 +354,7 @@ namespace PetaVerseApi.Core.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ProfileImageUrl")
+                    b.Property<string>("PetaverseProfileImageUrl")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -384,26 +408,35 @@ namespace PetaVerseApi.Core.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserRole");
+                    b.ToTable("UserRoles");
                 });
 
             modelBuilder.Entity("PetaVerseApi.Core.Entities.Animal", b =>
                 {
                     b.HasOne("PetaVerseApi.Core.Entities.Breed", "Breed")
                         .WithMany("Animals")
-                        .HasForeignKey("BreedId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("PetaVerseApi.Core.Entities.Species", "Species")
-                        .WithMany("Animals")
-                        .HasForeignKey("SpeciesId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .HasForeignKey("BreedId");
 
                     b.Navigation("Breed");
+                });
 
-                    b.Navigation("Species");
+            modelBuilder.Entity("PetaVerseApi.Core.Entities.AnimalPetaverseMedia", b =>
+                {
+                    b.HasOne("PetaVerseApi.Core.Entities.Animal", "Animal")
+                        .WithMany("AnimalPetaverseMedias")
+                        .HasForeignKey("AnimalId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PetaVerseApi.Core.Entities.PetaverseMedia", "PetaverseMedia")
+                        .WithMany("AnimalPetaverseMedias")
+                        .HasForeignKey("PetaverMediaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Animal");
+
+                    b.Navigation("PetaverseMedia");
                 });
 
             modelBuilder.Entity("PetaVerseApi.Core.Entities.Breed", b =>
@@ -442,7 +475,9 @@ namespace PetaVerseApi.Core.Migrations
                 {
                     b.HasOne("PetaVerseApi.Core.Entities.User", "User")
                         .WithMany("Statuses")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });
@@ -487,12 +522,19 @@ namespace PetaVerseApi.Core.Migrations
 
             modelBuilder.Entity("PetaVerseApi.Core.Entities.Animal", b =>
                 {
+                    b.Navigation("AnimalPetaverseMedias");
+
                     b.Navigation("UserAnimals");
                 });
 
             modelBuilder.Entity("PetaVerseApi.Core.Entities.Breed", b =>
                 {
                     b.Navigation("Animals");
+                });
+
+            modelBuilder.Entity("PetaVerseApi.Core.Entities.PetaverseMedia", b =>
+                {
+                    b.Navigation("AnimalPetaverseMedias");
                 });
 
             modelBuilder.Entity("PetaVerseApi.Core.Entities.Role", b =>
@@ -502,8 +544,6 @@ namespace PetaVerseApi.Core.Migrations
 
             modelBuilder.Entity("PetaVerseApi.Core.Entities.Species", b =>
                 {
-                    b.Navigation("Animals");
-
                     b.Navigation("Breeds");
                 });
 

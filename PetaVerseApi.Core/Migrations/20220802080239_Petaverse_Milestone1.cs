@@ -5,12 +5,12 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace PetaVerseApi.Core.Migrations
 {
-    public partial class test : Migration
+    public partial class Petaverse_Milestone1 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "PetaverseMedia",
+                name: "PetaverseMedias",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -21,11 +21,11 @@ namespace PetaVerseApi.Core.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PetaverseMedia", x => x.Id);
+                    table.PrimaryKey("PK_PetaverseMedias", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Role",
+                name: "Roles",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -34,7 +34,7 @@ namespace PetaVerseApi.Core.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Role", x => x.Id);
+                    table.PrimaryKey("PK_Roles", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -58,7 +58,10 @@ namespace PetaVerseApi.Core.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Color = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Icon = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TopLovedPetOfTheWeek = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -86,13 +89,7 @@ namespace PetaVerseApi.Core.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Guid = table.Column<string>(type: "nvarchar(450)", nullable: false, defaultValueSql: "NEWID()"),
-                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Gender = table.Column<bool>(type: "bit", nullable: true),
-                    DateOfBirth = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ProfileImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PetaverseProfileImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CoverImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: true),
@@ -104,7 +101,7 @@ namespace PetaVerseApi.Core.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Breed",
+                name: "Breeds",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -124,9 +121,9 @@ namespace PetaVerseApi.Core.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Breed", x => x.Id);
+                    table.PrimaryKey("PK_Breeds", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Breed_Species_SpeciesId",
+                        name: "FK_Breeds_Species_SpeciesId",
                         column: x => x.SpeciesId,
                         principalTable: "Species",
                         principalColumn: "Id",
@@ -139,11 +136,11 @@ namespace PetaVerseApi.Core.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<int>(type: "int", nullable: false),
                     Toppic = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Title = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Likes = table.Column<int>(type: "int", nullable: true),
-                    UserId = table.Column<int>(type: "int", nullable: true)
+                    Likes = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -156,7 +153,7 @@ namespace PetaVerseApi.Core.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserRole",
+                name: "UserRoles",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -166,15 +163,15 @@ namespace PetaVerseApi.Core.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserRole", x => x.Id);
+                    table.PrimaryKey("PK_UserRoles", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_UserRole_Role_RoleId",
+                        name: "FK_UserRoles_Roles_RoleId",
                         column: x => x.RoleId,
-                        principalTable: "Role",
+                        principalTable: "Roles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_UserRole_Users_UserId",
+                        name: "FK_UserRoles_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -187,25 +184,49 @@ namespace PetaVerseApi.Core.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    SpeciesId = table.Column<int>(type: "int", nullable: false),
-                    BreedId = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    PetAvatar = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Bio = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PetColor = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SixDigitCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Gender = table.Column<bool>(type: "bit", nullable: false),
-                    Age = table.Column<int>(type: "int", nullable: false)
+                    Age = table.Column<int>(type: "int", nullable: true),
+                    BreedId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Animals", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Animals_Breed_BreedId",
+                        name: "FK_Animals_Breeds_BreedId",
                         column: x => x.BreedId,
-                        principalTable: "Breed",
+                        principalTable: "Breeds",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AnimalPetaverseMedia",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    AnimalId = table.Column<int>(type: "int", nullable: false),
+                    PetaverMediaId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AnimalPetaverseMedia", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Animals_Species_SpeciesId",
-                        column: x => x.SpeciesId,
-                        principalTable: "Species",
-                        principalColumn: "Id");
+                        name: "FK_AnimalPetaverseMedia_Animals_AnimalId",
+                        column: x => x.AnimalId,
+                        principalTable: "Animals",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_AnimalPetaverseMedia_PetaverseMedias_PetaverMediaId",
+                        column: x => x.PetaverMediaId,
+                        principalTable: "PetaverseMedias",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -230,9 +251,9 @@ namespace PetaVerseApi.Core.Migrations
                         principalTable: "Animals",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_PetShorts_PetaverseMedia_MediaId",
+                        name: "FK_PetShorts_PetaverseMedias_MediaId",
                         column: x => x.MediaId,
-                        principalTable: "PetaverseMedia",
+                        principalTable: "PetaverseMedias",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_PetShorts_Users_PublisherId",
@@ -268,18 +289,23 @@ namespace PetaVerseApi.Core.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_AnimalPetaverseMedia_AnimalId",
+                table: "AnimalPetaverseMedia",
+                column: "AnimalId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AnimalPetaverseMedia_PetaverMediaId",
+                table: "AnimalPetaverseMedia",
+                column: "PetaverMediaId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Animals_BreedId",
                 table: "Animals",
                 column: "BreedId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Animals_SpeciesId",
-                table: "Animals",
-                column: "SpeciesId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Breed_SpeciesId",
-                table: "Breed",
+                name: "IX_Breeds_SpeciesId",
+                table: "Breeds",
                 column: "SpeciesId");
 
             migrationBuilder.CreateIndex(
@@ -313,13 +339,13 @@ namespace PetaVerseApi.Core.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserRole_RoleId",
-                table: "UserRole",
+                name: "IX_UserRoles_RoleId",
+                table: "UserRoles",
                 column: "RoleId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserRole_UserId",
-                table: "UserRole",
+                name: "IX_UserRoles_UserId",
+                table: "UserRoles",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
@@ -331,6 +357,9 @@ namespace PetaVerseApi.Core.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "AnimalPetaverseMedia");
+
             migrationBuilder.DropTable(
                 name: "PetShorts");
 
@@ -347,22 +376,22 @@ namespace PetaVerseApi.Core.Migrations
                 name: "UserAnimals");
 
             migrationBuilder.DropTable(
-                name: "UserRole");
+                name: "UserRoles");
 
             migrationBuilder.DropTable(
-                name: "PetaverseMedia");
+                name: "PetaverseMedias");
 
             migrationBuilder.DropTable(
                 name: "Animals");
 
             migrationBuilder.DropTable(
-                name: "Role");
+                name: "Roles");
 
             migrationBuilder.DropTable(
                 name: "Users");
 
             migrationBuilder.DropTable(
-                name: "Breed");
+                name: "Breeds");
 
             migrationBuilder.DropTable(
                 name: "Species");

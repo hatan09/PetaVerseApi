@@ -11,9 +11,7 @@ namespace PetaVerseApi.Core.Entities
         public bool         Gender       { get; set; }
         public int?         Age          { get; set; }
 
-        public Species?     Species     { get; set; }
-        public Breed?       Breed       { get; set; }
-
+        public Breed?       Breed        { get; set; }
 
         public virtual ICollection<UserAnimal>           UserAnimals           { get; set; } = new HashSet<UserAnimal>();
         public virtual ICollection<AnimalPetaverseMedia> AnimalPetaverseMedias { get; set; } = new HashSet<AnimalPetaverseMedia>();

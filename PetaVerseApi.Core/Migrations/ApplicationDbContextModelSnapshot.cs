@@ -56,14 +56,9 @@ namespace PetaVerseApi.Core.Migrations
                     b.Property<string>("SixDigitCode")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("SpeciesId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("BreedId");
-
-                    b.HasIndex("SpeciesId");
 
                     b.ToTable("Animals");
                 });
@@ -143,7 +138,7 @@ namespace PetaVerseApi.Core.Migrations
 
                     b.HasIndex("SpeciesId");
 
-                    b.ToTable("Breed");
+                    b.ToTable("Breeds");
                 });
 
             modelBuilder.Entity("PetaVerseApi.Core.Entities.PetaverseMedia", b =>
@@ -166,7 +161,7 @@ namespace PetaVerseApi.Core.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("PetaverseMedia");
+                    b.ToTable("PetaverseMedias");
                 });
 
             modelBuilder.Entity("PetaVerseApi.Core.Entities.PetShorts", b =>
@@ -221,7 +216,7 @@ namespace PetaVerseApi.Core.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Role");
+                    b.ToTable("Roles");
                 });
 
             modelBuilder.Entity("PetaVerseApi.Core.Entities.Shedding", b =>
@@ -411,7 +406,7 @@ namespace PetaVerseApi.Core.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserRole");
+                    b.ToTable("UserRoles");
                 });
 
             modelBuilder.Entity("PetaVerseApi.Core.Entities.Animal", b =>
@@ -420,13 +415,7 @@ namespace PetaVerseApi.Core.Migrations
                         .WithMany("Animals")
                         .HasForeignKey("BreedId");
 
-                    b.HasOne("PetaVerseApi.Core.Entities.Species", "Species")
-                        .WithMany("Animals")
-                        .HasForeignKey("SpeciesId");
-
                     b.Navigation("Breed");
-
-                    b.Navigation("Species");
                 });
 
             modelBuilder.Entity("PetaVerseApi.Core.Entities.AnimalPetaverseMedia", b =>
@@ -553,8 +542,6 @@ namespace PetaVerseApi.Core.Migrations
 
             modelBuilder.Entity("PetaVerseApi.Core.Entities.Species", b =>
                 {
-                    b.Navigation("Animals");
-
                     b.Navigation("Breeds");
                 });
 

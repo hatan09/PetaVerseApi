@@ -30,8 +30,7 @@ namespace PetaVerseApi.Repository
 
         public async Task<Animal?> FindAnimalWithFullInfo(int id, CancellationToken cancellationToken)
         {
-            var animal = await _dbSet.Include(a => a.Species)
-                                     .Include(a => a.Breed)
+            var animal = await _dbSet.Include(a => a.Breed)
                                      .AsNoTracking()
                                      .FirstOrDefaultAsync(a => a.Id == id, cancellationToken);
             return animal != null ? animal : null;
