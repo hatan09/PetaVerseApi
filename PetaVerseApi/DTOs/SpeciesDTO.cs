@@ -13,6 +13,5 @@ namespace PetaVerseApi.DTOs
         public string   TopLovedPetOfTheWeek { get; set; } = string.Empty;
 
         public virtual ICollection<BreedDTO>    Breeds  { get; set; } = Array.Empty<BreedDTO>();
-        public virtual ICollection<AnimalDTO>   Animals { get; set; } = Array.Empty<AnimalDTO>();
     }
 }
