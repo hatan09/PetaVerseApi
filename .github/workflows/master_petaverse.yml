@@ -53,5 +53,5 @@ jobs:
         with:
           app-name: 'Petaverse'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_2E24C4A2795B4A38B6C42C7E09656A4D }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_0AC4E8D0E41447D5B1BA554386BC14CD }}
           package: .
