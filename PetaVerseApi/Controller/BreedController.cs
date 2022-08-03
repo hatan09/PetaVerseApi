@@ -39,6 +39,13 @@ namespace PetaVerseApi.Controller
             return Ok(_mapper.Map<BreedDTO>(breed));
         }
 
+        [HttpGet("{speciesId}")]
+        public async Task<IActionResult> GetBySpeciesId(int speciesId, CancellationToken cancellationToken)
+        {
+            var breeds = await _breedRepository.GetBySpeciesId(speciesId, cancellationToken);
+            return Ok(_mapper.Map<IEnumerable<BreedDTO>>(breeds));
+        }
+
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] BreedDTO dto, CancellationToken cancellationToken = default)
         {
