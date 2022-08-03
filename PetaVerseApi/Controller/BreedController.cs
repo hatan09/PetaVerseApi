@@ -28,8 +28,15 @@ namespace PetaVerseApi.Controller
         [HttpGet]
         public async Task<IActionResult> GetAll(CancellationToken cancellationToken = default)
         {
-            var breed = await _breedRepository.FindAll().ToListAsync(cancellationToken);
-            return Ok(_mapper.Map<IEnumerable<BreedDTO>>(breed));
+            var breeds = await _breedRepository.FindAll().ToListAsync(cancellationToken);
+            return Ok(_mapper.Map<IEnumerable<BreedDTO>>(breeds));
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id, CancellationToken cancellationToken)
+        {
+            var breed = await _breedRepository.FindByIdAsync(id, cancellationToken);
+            return Ok(_mapper.Map<BreedDTO>(breed));
         }
 
         [HttpPost]
