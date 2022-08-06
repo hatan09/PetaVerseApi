@@ -6,7 +6,6 @@ namespace PetaVerseApi.DTOs
     //[ModelBinder(typeof(MultipleSourcesModelBinder<BreedDTO>))]
     public class BreedDTO : BaseDTO
     {
-        public int          SpeciesID           { get; set; }
         public string       BreedName           { get; set; } = string.Empty;
         public string       BreedDescription    { get; set; } = string.Empty;
         public string       ImageUrl            { get; set; } = string.Empty;

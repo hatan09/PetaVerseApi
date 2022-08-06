@@ -107,12 +107,15 @@ namespace PetaVerseApi.Controller
             }
             using var petaverseTransaction = await _petaverseDbContext.Database.BeginTransactionAsync();
             var animal = _mapper.Map<Animal>(dto);
+            var breed = await _breedRepository.FindByIdIQueryable(dto.BreedId, cancellationToken).FirstOrDefaultAsync();
 
-            animal.SixDigitCode = await _animalRepository.Generate6DigitCodeAsync();
-            animal.Breed = await _breedRepository.FindByIdAsync(dto.BreedId, cancellationToken);
-
-            _animalRepository.Add(animal);
-            await _animalRepository.SaveChangesAsync(cancellationToken);
+            if(breed != null)
+            {
+                animal.SixDigitCode = await _animalRepository.Generate6DigitCodeAsync();
+                animal.BreedId = breed.Id;
+                _animalRepository.Add(animal);
+                await _animalRepository.SaveChangesAsync(cancellationToken);
+            }
 
             if(listOfOwner.Count > 0)
             {

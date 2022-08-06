@@ -60,7 +60,7 @@ namespace PetaVerseApi.Core.Migrations
 
                     b.HasIndex("BreedId");
 
-                    b.ToTable("Animals");
+                    b.ToTable("Animals", (string)null);
                 });
 
             modelBuilder.Entity("PetaVerseApi.Core.Entities.AnimalPetaverseMedia", b =>
@@ -83,7 +83,7 @@ namespace PetaVerseApi.Core.Migrations
 
                     b.HasIndex("PetaverMediaId");
 
-                    b.ToTable("AnimalPetaverseMedia");
+                    b.ToTable("AnimalPetaverseMedia", (string)null);
                 });
 
             modelBuilder.Entity("PetaVerseApi.Core.Entities.Breed", b =>
@@ -138,7 +138,7 @@ namespace PetaVerseApi.Core.Migrations
 
                     b.HasIndex("SpeciesId");
 
-                    b.ToTable("Breeds");
+                    b.ToTable("Breeds", (string)null);
                 });
 
             modelBuilder.Entity("PetaVerseApi.Core.Entities.PetaverseMedia", b =>
@@ -161,7 +161,7 @@ namespace PetaVerseApi.Core.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("PetaverseMedias");
+                    b.ToTable("PetaverseMedias", (string)null);
                 });
 
             modelBuilder.Entity("PetaVerseApi.Core.Entities.PetShorts", b =>
@@ -199,7 +199,7 @@ namespace PetaVerseApi.Core.Migrations
 
                     b.HasIndex("PublisherId");
 
-                    b.ToTable("PetShorts");
+                    b.ToTable("PetShorts", (string)null);
                 });
 
             modelBuilder.Entity("PetaVerseApi.Core.Entities.Role", b =>
@@ -216,7 +216,7 @@ namespace PetaVerseApi.Core.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Roles");
+                    b.ToTable("Roles", (string)null);
                 });
 
             modelBuilder.Entity("PetaVerseApi.Core.Entities.Shedding", b =>
@@ -236,7 +236,7 @@ namespace PetaVerseApi.Core.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Sheddings");
+                    b.ToTable("Sheddings", (string)null);
                 });
 
             modelBuilder.Entity("PetaVerseApi.Core.Entities.Species", b =>
@@ -269,7 +269,7 @@ namespace PetaVerseApi.Core.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Species");
+                    b.ToTable("Species", (string)null);
                 });
 
             modelBuilder.Entity("PetaVerseApi.Core.Entities.Status", b =>
@@ -303,7 +303,7 @@ namespace PetaVerseApi.Core.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Statuses");
+                    b.ToTable("Statuses", (string)null);
                 });
 
             modelBuilder.Entity("PetaVerseApi.Core.Entities.Temperament", b =>
@@ -323,7 +323,7 @@ namespace PetaVerseApi.Core.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Temperaments");
+                    b.ToTable("Temperaments", (string)null);
                 });
 
             modelBuilder.Entity("PetaVerseApi.Core.Entities.User", b =>
@@ -360,7 +360,7 @@ namespace PetaVerseApi.Core.Migrations
                     b.HasIndex("Guid")
                         .IsUnique();
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("PetaVerseApi.Core.Entities.UserAnimal", b =>
@@ -383,7 +383,7 @@ namespace PetaVerseApi.Core.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserAnimals");
+                    b.ToTable("UserAnimals", (string)null);
                 });
 
             modelBuilder.Entity("PetaVerseApi.Core.Entities.UserRole", b =>
@@ -406,7 +406,7 @@ namespace PetaVerseApi.Core.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserRoles");
+                    b.ToTable("UserRoles", (string)null);
                 });
 
             modelBuilder.Entity("PetaVerseApi.Core.Entities.Animal", b =>

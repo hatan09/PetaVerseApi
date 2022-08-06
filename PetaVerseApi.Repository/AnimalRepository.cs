@@ -37,6 +37,9 @@ namespace PetaVerseApi.Repository
         }
 
 
+
+
+         
         //public override IQueryable<Animal> FindAll(Expression<Func<Animal, bool>>? predicate = null)
         //    => _dbSet.WhereIf(predicate != null, predicate!)
         //             .Include(b => b.Species);
