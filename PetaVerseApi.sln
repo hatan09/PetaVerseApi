@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PetaVerseApi.Core", "PetaVe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PetaVerseApi.Repository", "PetaVerseApi.Repository\PetaVerseApi.Repository.csproj", "{5A1EB2A0-05BF-4187-8286-F8809C8C8528}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PetaVerseApi", "PetaVerseApi\PetaVerseApi.csproj", "{5ACE4DEC-A78A-424F-A8B4-72429DA99FA0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PetaVerseApi", "PetaVerseApi\PetaVerseApi.csproj", "{5ACE4DEC-A78A-424F-A8B4-72429DA99FA0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PetaVerseApi.Test", "PetaVerseApi.Test\PetaVerseApi.Test.csproj", "{FF2C3F85-CC8D-419F-B591-30162318238E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{5ACE4DEC-A78A-424F-A8B4-72429DA99FA0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5ACE4DEC-A78A-424F-A8B4-72429DA99FA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5ACE4DEC-A78A-424F-A8B4-72429DA99FA0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FF2C3F85-CC8D-419F-B591-30162318238E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF2C3F85-CC8D-419F-B591-30162318238E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF2C3F85-CC8D-419F-B591-30162318238E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF2C3F85-CC8D-419F-B591-30162318238E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
