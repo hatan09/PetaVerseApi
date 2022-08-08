@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using ExcelDataReader;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PetaVerseApi.Contract;
@@ -114,6 +115,57 @@ namespace PetaVerseApi.Controller
             _speciesRepository.Delete(species);
             await _speciesRepository.SaveChangesAsync(cancellationToken);
             return NoContent();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UploadDataFromExcel(IFormFile file, CancellationToken cancellationToken)
+        {            
+            if (!Path.GetExtension(file.FileName).Equals(".xlsx"))
+                return Forbid("File should be compressed in '.xlsx' format");
+
+
+            var tempPath = Path.GetTempFileName();
+
+            using (FileStream stream = new FileStream(tempPath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None, 4096, FileOptions.RandomAccess | FileOptions.DeleteOnClose))
+            {
+                await file.CopyToAsync(stream, cancellationToken);
+
+                System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+
+                using (IExcelDataReader reader = ExcelReaderFactory.CreateReader(stream))
+                {
+                    var conf = new ExcelDataSetConfiguration
+                    {
+                        ConfigureDataTable = _ => new ExcelDataTableConfiguration
+                        {
+                            UseHeaderRow = true
+                        }
+                    };
+
+                    var dataSet = reader.AsDataSet(conf);
+
+                    var dataTable = dataSet.Tables[0];
+
+
+                    for (var i = 0; i < dataTable.Rows.Count; i++)
+                    {
+                        SpeciesDTO dto = new SpeciesDTO
+                        {
+                            Name = dataTable.Rows[i][0].ToString()!,
+                            Color = dataTable.Rows[i][1].ToString()!,
+                            Icon = dataTable.Rows[i][2].ToString()!,
+                            Description = dataTable.Rows[i][3].ToString()!,
+                            TopLovedPetOfTheWeek = dataTable.Rows[i][4].ToString()!,
+                        };
+                        var species = _mapper.Map<Species>(dto);
+                        _speciesRepository.Add(species);
+                    }
+
+                    await _speciesRepository.SaveChangesAsync(cancellationToken);
+                }
+            }
+
+            return Ok();
         }
     }
 }
