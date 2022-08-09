@@ -1,16 +1,15 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualStudio.TestPlatform.TestHost;
+using PetaVerseApi.Core.Database;
 using PetaVerseApi.DTOs.Mapping;
-using PetaVerseApi.Test.Controllers;
 
 namespace PetaVerseApi.Test
 {
-    public class TestStartup : Program
+    public class TestStartup
     {
         public TestStartup(IHostingEnvironment env)
         {
@@ -30,6 +29,13 @@ namespace PetaVerseApi.Test
             var mapperConfig = new MapperConfiguration(mc => mc.AddProfile(new MappingProfile()));
             IMapper mapper = mapperConfig.CreateMapper();
             services.AddSingleton(mapper);
+
+            services.AddDbContext<ApplicationDbContext>(options =>
+            {
+                options.UseInMemoryDatabase("Test");
+            });
+            //services.AddDbContext<ApplicationDbContext>()
+
         }
 
         public void Configure(IApplicationBuilder app)

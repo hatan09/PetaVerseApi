@@ -1,16 +1,14 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.TestHost;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using PetaVerseApi.Contract;
 using PetaVerseApi.Controller;
 using PetaVerseApi.Core.Database;
 using PetaVerseApi.Core.Entities;
-using PetaVerseApi.DTOs.Mapping;
+using PetaVerseApi.DTOs;
 using PetaVerseApi.Repository;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -18,13 +16,13 @@ namespace PetaVerseApi.Test.Controllers
 {
     public class SpeciesControllerTest : IClassFixture<InjectionFixture>
     {
-        private readonly IMapper _mapper;
+        private readonly IMapper? _mapper;
+        private readonly ApplicationDbContext? _context;
 
-
-        public SpeciesControllerTest(IMapper mapper)
+        public SpeciesControllerTest(InjectionFixture injectionFixture)
         {
-            //_mapper = new TestServer(new WebHostBuilder().UseStartup<TestStartup>());
-            _mapper = new MapperConfiguration(mc => mc.AddProfile(new MappingProfile())).CreateMapper();
+            _mapper = injectionFixture.ServiceProvider?.GetService<IMapper>();
+            _context = injectionFixture.ServiceProvider?.GetService<ApplicationDbContext>();
         }
 
 
@@ -32,21 +30,14 @@ namespace PetaVerseApi.Test.Controllers
         public async Task GetAll_GetAllSpeciesFromDatabase()
         {
             // Arrange
-            var services = new ServiceCollection();
-            services.AddDbContext<ApplicationDbContext>(options =>
-            {
-                options.UseInMemoryDatabase("Species");
-            });
-            var provider = services.BuildServiceProvider();
-            var ctx = provider.GetService<ApplicationDbContext>();
-            await ctx.Species.AddRangeAsync(new[]
+            await _context.Species.AddRangeAsync(new[]
             {
                 new Species { Name = "Species 1"},
                 new Species { Name = "Species 2"}
             });
-            await ctx.SaveChangesAsync();
+            await _context.SaveChangesAsync();
 
-            var repo = new SpeciesRepository(ctx);
+            var repo = new SpeciesRepository(_context);
 
             var controller = new SpeciesController(
                 new Mock<IAnimalRepository>().Object,
@@ -60,6 +51,7 @@ namespace PetaVerseApi.Test.Controllers
 
             // Assert
             var objectResult = Assert.IsType<OkObjectResult>(actionResult);
+            Assert.IsAssignableFrom<IEnumerable<SpeciesDTO>>(objectResult.Value);
         }
 
         //[Fact]
