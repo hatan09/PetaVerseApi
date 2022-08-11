@@ -11,7 +11,7 @@ namespace PetaVerseApi.Test
 {
     public class TestStartup
     {
-        public TestStartup(IHostingEnvironment env)
+        public TestStartup(IWebHostEnvironment env)
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
