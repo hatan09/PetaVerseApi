@@ -8,6 +8,7 @@ using PetaVerseApi.Controller;
 using PetaVerseApi.Core.Database;
 using PetaVerseApi.Core.Entities;
 using PetaVerseApi.DTOs;
+using PetaVerseApi.Interfaces;
 using PetaVerseApi.Repository;
 using System;
 using System.Collections.Generic;
@@ -49,7 +50,8 @@ namespace PetaVerseApi.Test.Controllers
                 new Mock<IAnimalRepository>().Object,
                 repo,
                 new Mock<IBreedRepository>().Object,
-                _mapper!
+                _mapper!,
+                new Mock<IExcelHandlerService>().Object
             );
 
             // Action
@@ -75,7 +77,8 @@ namespace PetaVerseApi.Test.Controllers
                 new Mock<IAnimalRepository>().Object,
                 _speciesRepository!,
                 new Mock<IBreedRepository>().Object,
-                _mapper!
+                _mapper!,
+                new Mock<IExcelHandlerService>().Object
             );
 
             // Action
@@ -105,7 +108,8 @@ namespace PetaVerseApi.Test.Controllers
                 new Mock<IAnimalRepository>().Object,
                 _speciesRepository!,
                 new Mock<IBreedRepository>().Object,
-                _mapper!
+                _mapper!,
+                new Mock<IExcelHandlerService>().Object
             );
 
             // Action
@@ -136,7 +140,8 @@ namespace PetaVerseApi.Test.Controllers
                 new Mock<IAnimalRepository>().Object,
                 _speciesRepository!,
                 new Mock<IBreedRepository>().Object,
-                _mapper!
+                _mapper!,
+                new Mock<IExcelHandlerService>().Object
             );
 
             // Action
@@ -162,7 +167,8 @@ namespace PetaVerseApi.Test.Controllers
                 new Mock<IAnimalRepository>().Object,
                 _speciesRepository!,
                 new Mock<IBreedRepository>().Object,
-                _mapper!
+                _mapper!,
+                new Mock<IExcelHandlerService>().Object
             );
 
             // Action
@@ -189,7 +195,8 @@ namespace PetaVerseApi.Test.Controllers
                 new Mock<IAnimalRepository>().Object,
                 _speciesRepository!,
                 new Mock<IBreedRepository>().Object,
-                _mapper!
+                _mapper!,
+                new Mock<IExcelHandlerService>().Object
             );
 
             // Action
