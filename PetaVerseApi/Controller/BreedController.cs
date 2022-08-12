@@ -140,6 +140,7 @@ namespace PetaVerseApi.Controller
                     Color = rowCollection[i][1].ToString()!,
                     ImageUrl = rowCollection[i][2].ToString()!,
                     BreedDescription = rowCollection[i][3].ToString()!,
+                    SpeciesId = Int32.Parse(rowCollection[i][5].ToString()!),
                 };
 
                 var breed = _mapper.Map<Breed>(dto);

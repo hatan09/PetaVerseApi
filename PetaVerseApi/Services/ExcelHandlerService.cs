@@ -10,10 +10,10 @@ namespace PetaVerseApi.Services
         {
         }
 
-        private static void CheckFileFormat(string filename)
+        public void CheckFileFormat(string filename)
         {
             if (!Path.GetExtension(filename).Equals(".xlsx"))
-                throw new ("File should be compressed in '.xlsx' format");
+                throw new("File should be compressed in '.xlsx' format");
         }
 
         public async Task<DataRowCollection> GetRows(IFormFile file, CancellationToken cancellationToken)
