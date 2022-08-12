@@ -15,6 +15,7 @@ namespace PetaVerseApi.DTOs
         public double       MaximumWeight       { get; set; }
         public int          MinimumLifeSpan     { get; set; }
         public int          MaximumLifeSpan     { get; set; }
+        public int          SpeciesId           { get; set; }
         public CoatType     Coat                { get; set; }
         public string       Color               { get; set; } = string.Empty;
 
