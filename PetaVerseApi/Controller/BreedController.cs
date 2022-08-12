@@ -127,23 +127,25 @@ namespace PetaVerseApi.Controller
             return NoContent();
         }
 
-        [HttpPost]
-        public async Task<IActionResult> UploadDataFromExcel(IFormFile file, CancellationToken cancellationToken)
+        [HttpPost("{speciesId}")]
+        public async Task<IActionResult> UploadDataFromExcel(int speciesId, 
+                                                             IFormFile file, 
+                                                             CancellationToken cancellationToken)
         {            
             var rowCollection = await _excelHandlerService.GetRows(file, cancellationToken);
 
             for (var i = 0; i < rowCollection.Count; i++)
             {
                 var imageUrl = rowCollection[i][6].ToString()!;
-                if(!string.IsNullOrEmpty(imageUrl) && !string.IsNullOrWhiteSpace(imageUrl))
+                if(!string.IsNullOrEmpty(imageUrl) && !string.IsNullOrWhiteSpace(imageUrl) && speciesId != 0)
                 {
                     BreedDTO dto = new()
                     {
                         BreedName = rowCollection[i][0].ToString()!,
                         Color = rowCollection[i][1].ToString()!,
-                        ImageUrl = rowCollection[i][6].ToString()!,
+                        ImageUrl = imageUrl,
                         BreedDescription = rowCollection[i][3].ToString()!,
-                        SpeciesId = 1,
+                        SpeciesId = speciesId,
                     };
 
                     var breed = _mapper.Map<Breed>(dto);
