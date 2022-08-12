@@ -134,17 +134,21 @@ namespace PetaVerseApi.Controller
 
             for (var i = 0; i < rowCollection.Count; i++)
             {
-                BreedDTO dto = new()
+                var imageUrl = rowCollection[i][6].ToString()!;
+                if(!string.IsNullOrEmpty(imageUrl) && !string.IsNullOrWhiteSpace(imageUrl))
                 {
-                    BreedName = rowCollection[i][0].ToString()!,
-                    Color = rowCollection[i][1].ToString()!,
-                    ImageUrl = rowCollection[i][2].ToString()!,
-                    BreedDescription = rowCollection[i][3].ToString()!,
-                    SpeciesId = Int32.Parse(rowCollection[i][5].ToString()!),
-                };
+                    BreedDTO dto = new()
+                    {
+                        BreedName = rowCollection[i][0].ToString()!,
+                        Color = rowCollection[i][1].ToString()!,
+                        ImageUrl = rowCollection[i][6].ToString()!,
+                        BreedDescription = rowCollection[i][3].ToString()!,
+                        SpeciesId = 1,
+                    };
 
-                var breed = _mapper.Map<Breed>(dto);
-                _breedRepository.Add(breed);
+                    var breed = _mapper.Map<Breed>(dto);
+                    _breedRepository.Add(breed);
+                }
             }
 
             await _breedRepository.SaveChangesAsync(cancellationToken);
