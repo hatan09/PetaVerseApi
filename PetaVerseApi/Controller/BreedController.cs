@@ -1,11 +1,12 @@
 ﻿using AutoMapper;
-using ExcelDataReader;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PetaVerseApi.Contract;
 using PetaVerseApi.Core.Entities;
 using PetaVerseApi.DTOs;
 using PetaVerseApi.Interfaces;
+using ExcelDataReader;
+
 
 namespace PetaVerseApi.Controller
 {
@@ -16,18 +17,21 @@ namespace PetaVerseApi.Controller
         private readonly IMapper _mapper;
         private readonly ISpeciesRepository _speciesRepository;
         private readonly IAnimalRepository _animalRepository;
+        private readonly IExcelHandlerService _excelHandlerService;
 
         public BreedController(ISpeciesRepository speciesRepository,
                                IMediaService mediaService,
                                IBreedRepository breedRepository,
                                IMapper mapper,
-                               IAnimalRepository animalRepository)
+                               IAnimalRepository animalRepository,
+                               IExcelHandlerService excelHandlerService)
         {
             _speciesRepository = speciesRepository;
             _mediaService = mediaService;
             _breedRepository = breedRepository;
             _mapper = mapper;
             _animalRepository = animalRepository;
+            _excelHandlerService = excelHandlerService;
         }
 
         [HttpGet]
@@ -125,47 +129,24 @@ namespace PetaVerseApi.Controller
 
         [HttpPost]
         public async Task<IActionResult> UploadDataFromExcel(IFormFile file, CancellationToken cancellationToken)
-        {
-            if (!Path.GetExtension(file.FileName).Equals(".xlsx"))
-                return Forbid("File should be compressed in '.xlsx' format");
+        {            
+            var rowCollection = await _excelHandlerService.GetRows(file, cancellationToken);
 
-
-            var tempPath = Path.GetTempFileName();
-
-            using (FileStream stream = new FileStream(tempPath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None, 4096, FileOptions.RandomAccess | FileOptions.DeleteOnClose))
+            for (var i = 0; i < rowCollection.Count; i++)
             {
-                await file.CopyToAsync(stream, cancellationToken);
-
-                System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
-
-                using (IExcelDataReader reader = ExcelReaderFactory.CreateReader(stream))
+                BreedDTO dto = new()
                 {
-                    var conf = new ExcelDataSetConfiguration
-                    {
-                        ConfigureDataTable = _ => new ExcelDataTableConfiguration
-                        {
-                            UseHeaderRow = true
-                        }
-                    };
+                    BreedName = rowCollection[i][0].ToString()!,
+                    Color = rowCollection[i][1].ToString()!,
+                    ImageUrl = rowCollection[i][2].ToString()!,
+                    BreedDescription = rowCollection[i][3].ToString()!,
+                };
 
-                    var dataSet = reader.AsDataSet(conf);
-
-                    var dataTable = dataSet.Tables[0];
-
-
-                    for (var i = 0; i < dataTable.Rows.Count; i++)
-                    {
-                        BreedDTO dto = new BreedDTO
-                        {
-
-                        };
-                        var breed = _mapper.Map<Breed>(dto);
-                        _breedRepository.Add(breed);
-                    }
-
-                    await _breedRepository.SaveChangesAsync(cancellationToken);
-                }
+                var breed = _mapper.Map<Breed>(dto);
+                _breedRepository.Add(breed);
             }
+
+            await _breedRepository.SaveChangesAsync(cancellationToken);
 
             return Ok();
         }
