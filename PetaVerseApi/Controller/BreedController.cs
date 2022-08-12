@@ -5,6 +5,8 @@ using PetaVerseApi.Contract;
 using PetaVerseApi.Core.Entities;
 using PetaVerseApi.DTOs;
 using PetaVerseApi.Interfaces;
+using ExcelDataReader;
+
 
 namespace PetaVerseApi.Controller
 {
@@ -15,18 +17,21 @@ namespace PetaVerseApi.Controller
         private readonly IMapper _mapper;
         private readonly ISpeciesRepository _speciesRepository;
         private readonly IAnimalRepository _animalRepository;
+        private readonly IExcelHandlerService _excelHandlerService;
 
         public BreedController(ISpeciesRepository speciesRepository,
                                IMediaService mediaService,
                                IBreedRepository breedRepository,
                                IMapper mapper,
-                               IAnimalRepository animalRepository)
+                               IAnimalRepository animalRepository,
+                               IExcelHandlerService excelHandlerService)
         {
             _speciesRepository = speciesRepository;
             _mediaService = mediaService;
             _breedRepository = breedRepository;
             _mapper = mapper;
             _animalRepository = animalRepository;
+            _excelHandlerService = excelHandlerService;
         }
 
         [HttpGet]
@@ -120,6 +125,35 @@ namespace PetaVerseApi.Controller
             _breedRepository.Delete(breed);
             await _breedRepository.SaveChangesAsync(cancellationToken); 
             return NoContent();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UploadDataFromExcel(IFormFile file, CancellationToken cancellationToken)
+        {            
+            var rowCollection = await _excelHandlerService.GetRows(file, cancellationToken);
+
+            for (var i = 0; i < rowCollection.Count; i++)
+            {
+                var imageUrl = rowCollection[i][6].ToString()!;
+                if(!string.IsNullOrEmpty(imageUrl) && !string.IsNullOrWhiteSpace(imageUrl))
+                {
+                    BreedDTO dto = new()
+                    {
+                        BreedName = rowCollection[i][0].ToString()!,
+                        Color = rowCollection[i][1].ToString()!,
+                        ImageUrl = rowCollection[i][6].ToString()!,
+                        BreedDescription = rowCollection[i][3].ToString()!,
+                        SpeciesId = 1,
+                    };
+
+                    var breed = _mapper.Map<Breed>(dto);
+                    _breedRepository.Add(breed);
+                }
+            }
+
+            await _breedRepository.SaveChangesAsync(cancellationToken);
+
+            return Ok();
         }
     }
 }

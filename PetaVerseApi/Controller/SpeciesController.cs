@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
+using ExcelDataReader;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PetaVerseApi.Contract;
 using PetaVerseApi.Core.Entities;
 using PetaVerseApi.DTOs;
+using PetaVerseApi.Interfaces;
 
 namespace PetaVerseApi.Controller
 {
@@ -13,16 +15,19 @@ namespace PetaVerseApi.Controller
         private readonly IAnimalRepository _animalRepository;
         private readonly ISpeciesRepository _speciesRepository;
         private readonly IMapper _mapper;
+        private readonly IExcelHandlerService _excelHandlerService;
 
-        public SpeciesController(IAnimalRepository animalRepository, 
-            ISpeciesRepository speciesRepository, 
-            IBreedRepository breedRepository, 
-            IMapper mapper)
+        public SpeciesController(IAnimalRepository animalRepository,
+                                 ISpeciesRepository speciesRepository,
+                                 IBreedRepository breedRepository,
+                                 IMapper mapper,
+                                 IExcelHandlerService excelHandlerService)
         {
             _animalRepository = animalRepository;
             _speciesRepository = speciesRepository;
             _breedRepository = breedRepository;
             _mapper = mapper;
+            _excelHandlerService = excelHandlerService;
         }
 
         [HttpGet]
@@ -117,6 +122,31 @@ namespace PetaVerseApi.Controller
             _speciesRepository.Delete(species);
             await _speciesRepository.SaveChangesAsync(cancellationToken);
             return NoContent();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UploadDataFromExcel(IFormFile file, CancellationToken cancellationToken)
+        {
+            var rowCollection = await _excelHandlerService.GetRows(file, cancellationToken);
+
+            for (var i = 0; i < rowCollection.Count; i++)
+            {
+                SpeciesDTO dto = new()
+                {
+                    Name = rowCollection[i][0].ToString()!,
+                    Color = rowCollection[i][1].ToString()!,
+                    Icon = rowCollection[i][2].ToString()!,
+                    Description = rowCollection[i][3].ToString()!,
+                    TopLovedPetOfTheWeek = rowCollection[i][4].ToString()!,
+                };
+
+                var species = _mapper.Map<Species>(dto);
+                _speciesRepository.Add(species);
+            }
+
+            await _speciesRepository.SaveChangesAsync(cancellationToken);
+
+            return Ok();
         }
     }
 }

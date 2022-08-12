@@ -28,6 +28,7 @@ builder.Services.AddSingleton((provider) =>
                   });
 
 builder.Services.AddSingleton<IMediaService, AzureBlobStorageMediaService>();
+builder.Services.AddSingleton<IExcelHandlerService, ExcelHandlerService>();
 
 builder.Services.AddScoped<IUserRepository,                 UserRepository>()
                 .AddScoped<IBreedRepository,                BreedRepository>()
