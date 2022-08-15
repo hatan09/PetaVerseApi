@@ -134,10 +134,10 @@ namespace PetaVerseApi.Controller
             {
                 using(Stream stream = avatar.OpenReadStream())
                 {
-                    Tuple<bool, string> result = await _mediaService.UploadAvatarToStorage(stream, avatar.FileName);
-                    var isUploaded = result.Item1;
+                    Tuple<string, string> result = await _mediaService.UploadAvatarToStorage(stream, avatar.FileName);
+                    var blobName = result.Item1;
                     var stringUrl = result.Item2;
-                    if (isUploaded && !String.IsNullOrEmpty(stringUrl))
+                    if (!String.IsNullOrEmpty(blobName) && !String.IsNullOrEmpty(stringUrl))
                     {
                         return Ok(stringUrl);
                     }
@@ -167,17 +167,20 @@ namespace PetaVerseApi.Controller
                         {
                             using (Stream stream = formFile.OpenReadStream())
                             {
-                                Tuple<bool, string> result = await _mediaService.UploadFileToStorage(stream, formFile.FileName);
-                                var isUploaded = result.Item1;
+                                Tuple<string, string, string> result = await _mediaService.UploadFileToStorage(stream, formFile.FileName, petId);
+                                var blobName = result.Item1;
                                 var stringUrl = result.Item2;
+                                var blobGuid = result.Item3;
 
-                                if (isUploaded && !String.IsNullOrEmpty(stringUrl))
+                                if (!String.IsNullOrEmpty(stringUrl))
                                 {
                                     var petaverseMedia = new PetaverseMedia()
                                     {
-                                        MediaUrl = stringUrl,
+                                        MediaName  = blobName,
+                                        MediaGuid  = blobGuid,
+                                        MediaUrl   = stringUrl,
                                         TimeUpload = DateTime.Now,
-                                        Type = MediaType.Photo
+                                        Type       = MediaType.Photo
                                     };
 
                                     _petaverseMediaRepository.Add(petaverseMedia);

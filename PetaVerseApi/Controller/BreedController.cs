@@ -86,10 +86,10 @@ namespace PetaVerseApi.Controller
                 }
                 using (Stream stream = image.OpenReadStream())
                 {
-                    Tuple<bool, string> result = await _mediaService.UploadAvatarToStorage(stream, image.FileName);
-                    var isUploaded = result.Item1;
+                    Tuple<string, string> result = await _mediaService.UploadAvatarToStorage(stream, image.FileName);
+                    var blobName = result.Item1;
                     var stringUrl = result.Item2;
-                    if (isUploaded && !string.IsNullOrEmpty(stringUrl))
+                    if (!String.IsNullOrEmpty(blobName) && !string.IsNullOrEmpty(stringUrl))
                     {
                         breed.ImageUrl = stringUrl;
                         await _breedRepository.SaveChangesAsync(cancellationToken);
