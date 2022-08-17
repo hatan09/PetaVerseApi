@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PetaVerseApi.Core.Database;
 
@@ -11,9 +12,10 @@ using PetaVerseApi.Core.Database;
 namespace PetaVerseApi.Core.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220817044459_Animal_PetAvatar")]
+    partial class Animal_PetAvatar
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -30,17 +32,14 @@ namespace PetaVerseApi.Core.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<double?>("Age")
-                        .HasColumnType("float");
+                    b.Property<int?>("Age")
+                        .HasColumnType("int");
 
                     b.Property<string>("Bio")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("BreedId")
                         .HasColumnType("int");
-
-                    b.Property<DateTime?>("DateOfBirth")
-                        .HasColumnType("datetime2");
 
                     b.Property<bool>("Gender")
                         .HasColumnType("bit");

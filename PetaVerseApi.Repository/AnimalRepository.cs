@@ -12,7 +12,9 @@ namespace PetaVerseApi.Repository
         public AnimalRepository(ApplicationDbContext context) : base(context) { }
 
         public override async Task<Animal?> FindByIdAsync(int id, CancellationToken cancellationToken = default)
-            => await FindAll(b => b.Id == id)
+            => await FindAll(a => a.Id == id)
+                    .Include(a => a.PetAvatar)
+                    .Include(a => a.Breed)
                     .FirstOrDefaultAsync(cancellationToken);
 
         public async Task<string> Generate6DigitCodeAsync()
@@ -31,6 +33,7 @@ namespace PetaVerseApi.Repository
         public async Task<Animal?> FindAnimalWithFullInfo(int id, CancellationToken cancellationToken)
         {
             var animal = await _dbSet.Include(a => a.Breed)
+                                     .Include(a => a.PetAvatar)
                                      .AsNoTracking()
                                      .FirstOrDefaultAsync(a => a.Id == id, cancellationToken);
             return animal != null ? animal : null;

@@ -30,6 +30,8 @@ namespace PetaVerseApi.DTOs.Mapping
             CreateMap<AnimalDTO, Animal>()
                 .ForMember(a => a.Id, opt => opt.Ignore());
 
+            CreateMap<CreatePetDTO, Animal>();
+
             CreateMap<Animal, AnimalDetailDTO>();
 
             CreateMap<User, UserDTO>()

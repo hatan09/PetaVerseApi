@@ -18,8 +18,6 @@ namespace PetaVerseApi.DTOs
         public int          SpeciesId           { get; set; }
         public CoatType     Coat                { get; set; }
         public string       Color               { get; set; } = string.Empty;
-
-        public virtual ICollection<AnimalDTO> Animals { get; set; } = Array.Empty<AnimalDTO>();
     }
     public enum CoatType
     {
