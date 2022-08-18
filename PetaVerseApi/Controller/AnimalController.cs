@@ -7,6 +7,7 @@ using PetaVerseApi.Core.Entities;
 using PetaVerseApi.DTOs;
 using PetaVerseApi.DTOs.Create;
 using PetaVerseApi.Interfaces;
+using PetaVerseApi.Repository;
 using System.Threading;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 using MediaType = PetaVerseApi.Core.Entities.MediaType;
@@ -183,7 +184,7 @@ namespace PetaVerseApi.Controller
                         {
                             using (Stream stream = formFile.OpenReadStream())
                             {
-                                Tuple<string, string, string> result = await _mediaService.UploadFileToStorage(stream, formFile.FileName, petId);
+                                Tuple<string, string, string> result = await _mediaService.UploadFileToStorage(stream, pet.SixDigitCode + "_" + formFile.FileName, petId);
                                 var blobName = result.Item1;
                                 var stringUrl = result.Item2;
                                 var blobGuid = result.Item3;
@@ -254,19 +255,26 @@ namespace PetaVerseApi.Controller
             var userAnimals = _userAnimalRepository.FindAll(ua => ua.AnimalId == animal.Id).ToList();
             userAnimals.ForEach(ua => _userAnimalRepository.Delete(ua));
 
-            var petaverseMediaIds = await _animalPetaverseMediaRepository.FindAll(apm => apm.AnimalId == id)
-                                                                   .Select(apm => apm.PetaverMediaId)
-                                                                   .ToListAsync();
+            var animalPetaverseMedias = await _animalPetaverseMediaRepository.FindAll(apm => apm.AnimalId == id)
+                                                                         .ToListAsync();
 
-            foreach (var petaverseMediaId in petaverseMediaIds)
+
+
+            foreach (var animalPetaverseMedia in animalPetaverseMedias)
             {
-                var petaverseMedia = await _petaverseMediaRepository.FindByIdAsync(id);
+                var petaverseMedia = await _petaverseMediaRepository.FindByIdAsync(animalPetaverseMedia.PetaverMediaId);
                 if(petaverseMedia is not null)
+                {
                     _petaverseMediaRepository.Delete(petaverseMedia);
+                    _animalPetaverseMediaRepository.Delete(animalPetaverseMedia);
+                }
+                
             }
 
             await _animalRepository.SaveChangesAsync(cancellationToken);
             await _userAnimalRepository.SaveChangesAsync(cancellationToken);
+            await _petaverseMediaRepository.SaveChangesAsync(cancellationToken);
+            await _animalPetaverseMediaRepository.SaveChangesAsync(cancellationToken);
             return NoContent();
         }
     }

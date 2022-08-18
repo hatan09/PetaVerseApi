@@ -43,17 +43,16 @@ namespace PetaVerseApi.Services
             var blobGuid = Guid.NewGuid().ToString("N");
             var blobUri = new Uri("https://" +
                                   _storageConfig.CurrentValue.AccountName +
-                                  ".blob.core.windows.net/" +
-                                  _storageConfig.CurrentValue.ImageContainer +
+                                  ".blob.core.windows.net/petaversegallery" +
                                   "/" + fileName);
             // Create the blob client.
             var blobClient = new BlobClient(blobUri, _storageCredentials);
-            await blobClient.SetTagsAsync(new Dictionary<string, string>
-            {
-                { "Guid", blobGuid },
-                { "PetId", petId.ToString() },
-                { "UploadDate", DateTime.Now.ToShortDateString() }
-            });
+            //await blobClient.SetTagsAsync(new Dictionary<string, string>
+            //{
+            //    { "Guid", blobGuid },
+            //    { "PetId", petId.ToString() },
+            //    { "UploadDate", DateTime.Now.ToShortDateString() }
+            //});
 
             // Upload the file
             await blobClient.UploadAsync(fileStream);
