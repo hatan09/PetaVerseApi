@@ -10,12 +10,12 @@ using Azure.Storage;
 using Microsoft.Extensions.Options;
 using PetaVerseApi.Interfaces;
 using PetaVerseApi.Services;
+using Azure.Storage.Blobs;
+using PetaVerseApi.Enums;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.Configure<AzureStorageConfig>(builder.Configuration.GetSection("AzureStorageConfig"));
-
-// Add services to the container.
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Scoped);
 //builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("LocalConnection")));
 builder.Services.AddSwaggerGen(options => options.SwaggerDoc("v1", new OpenApiInfo { Title = "PetaVerseApi", Version = "v1" }));
@@ -26,6 +26,20 @@ builder.Services.AddSingleton((provider) =>
                       var config = provider.GetRequiredService<IOptionsMonitor<AzureStorageConfig>>().CurrentValue;
                       return new StorageSharedKeyCredential(config.AccountName, config.AccountKey);
                   });
+
+builder.Services.AddTransient<Func<ContainerEnum, BlobContainerClient>>(provider => container =>
+{
+    var config = provider.GetRequiredService<IOptionsMonitor<AzureStorageConfig>>().CurrentValue;
+    switch (container)
+    {
+        case ContainerEnum.AvatarContainer:
+            return new BlobContainerClient(config.BlobConnectionString, config.PetaverseAvatar);
+        case ContainerEnum.GalleryContainer:
+            return new BlobContainerClient(config.BlobConnectionString, config.PetaverseGallery);
+        default:
+            return new BlobContainerClient(config.BlobConnectionString, config.PetaverseGallery);
+    }
+});
 
 builder.Services.AddSingleton<IMediaService, AzureBlobStorageMediaService>();
 builder.Services.AddSingleton<IExcelHandlerService, ExcelHandlerService>();

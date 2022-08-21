@@ -1,10 +1,14 @@
-﻿namespace PetaVerseApi.Interfaces
+﻿using PetaVerseApi.Core.Entities;
+
+namespace PetaVerseApi.Interfaces
 {
     public interface IMediaService
     {
-        public bool IsImage(IFormFile file);
-        public Task<Tuple<string, string, string>> UploadFileToStorage(Stream fileStream, string fileName, int petId);
-        public Task<Tuple<string, string>> UploadAvatarToStorage(Stream fileStream, string fileName);
-        public Task<List<string>> GetThumbNailUrls();
+        bool IsImage(IFormFile file);
+        Task<Tuple<string, string, string>> UploadFileToStorage(Stream fileStream, string fileName, int petId);
+        Task<Tuple<string, string>> UploadAvatarToStorage(Stream fileStream, string fileName);
+        Task<List<string>> GetThumbNailUrls();
+        //Task DeleteFilesAsync(List<string> fileListName);
+        Task DeleteFileAsync(string fileName, MediaType mediaType);
     }
 }

@@ -15,6 +15,7 @@ namespace PetaVerseApi.Repository
         public async Task<User?> FindByGuidAsync(string guid, CancellationToken cancellationToken)
             => await _dbSet.FirstOrDefaultAsync(u => u.Guid == guid, cancellationToken);
 
+
         public async Task<User?> FindByNameAsync(string userName, CancellationToken cancellationToken)
         {
             var user = await base.FindByNameAsync(userName, cancellationToken);

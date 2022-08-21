@@ -7,9 +7,6 @@ using PetaVerseApi.Core.Entities;
 using PetaVerseApi.DTOs;
 using PetaVerseApi.DTOs.Create;
 using PetaVerseApi.Interfaces;
-using PetaVerseApi.Repository;
-using System.Threading;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 using MediaType = PetaVerseApi.Core.Entities.MediaType;
 
 namespace PetaVerseApi.Controller
@@ -84,12 +81,13 @@ namespace PetaVerseApi.Controller
                         var petPhotos = new List<PetaverseMediaDTO>();
                         petPhotoIds.ForEach(id =>
                         {
-                            var photo = _petaverseMediaRepository.FindAll(media => media.Id == id).FirstOrDefault();
+                            var photo = _petaverseMediaRepository.FindAll(media => media.Id == id && media.Type == MediaType.Photo).FirstOrDefault();
                             if (photo != null)
                                 petPhotos.Add(_mapper.Map<PetaverseMediaDTO>(photo));
                         });
                         var animalDTO = _mapper.Map<AnimalDTO>(animal);
                         animalDTO.PetPhotos = petPhotos;
+
                         animalsDTO.Add(animalDTO);
                     }
                 }
@@ -102,18 +100,17 @@ namespace PetaVerseApi.Controller
         public async Task<IActionResult> Create([FromBody] CreatePetDTO dto, CancellationToken cancellationToken = default)
         {
             var listOfOwnersGuid = dto.OwnerGuids.Split(',').ToList();
-            var listOfOwner = new List<User>();
-            foreach (var ownerGuid in listOfOwnersGuid)
+            var listOfOwner = _userRepository.FindAll(u => listOfOwnersGuid.Any(i => i == u.Guid));
+            var excludeGuids = listOfOwnersGuid.Except(listOfOwner.Select(u => u.Guid));
+            if(excludeGuids.Any())
             {
-                var user = await _userRepository.FindByGuidAsync(ownerGuid, cancellationToken);
-                if (user == null) return NotFound($"Cant find user with Guid: {ownerGuid}");
-                else listOfOwner.Add(user);
+                return NotFound($"Cant find user with Guid: {String.Join(", ", excludeGuids)}");
             }
             using var petaverseTransaction = await _petaverseDbContext.Database.BeginTransactionAsync();
             var animal = _mapper.Map<Animal>(dto);
             var breed = await _breedRepository.FindByIdIQueryable(dto.BreedId, cancellationToken).FirstOrDefaultAsync();
 
-            if(breed != null)
+            if (breed != null)
             {
                 animal.SixDigitCode = await _animalRepository.Generate6DigitCodeAsync();
                 animal.BreedId = breed.Id;
@@ -123,10 +120,11 @@ namespace PetaVerseApi.Controller
                 //Phai co dong nay
                 animal.Breed = breed;
             }
+            else return NotFound("Can't find this breed is our source !!");
 
-            if(listOfOwner.Count > 0)
+            if(listOfOwner.ToList().Count > 0)
             {
-                listOfOwner.ForEach(owner => _userAnimalRepository.Add(new UserAnimal() { UserId = owner.Id, AnimalId = animal.Id}));
+                listOfOwner.ToList().ForEach(owner => _userAnimalRepository.Add(new UserAnimal() { UserId = owner.Id, AnimalId = animal.Id}));
                 await _userAnimalRepository.SaveChangesAsync(cancellationToken);
             }
 
@@ -149,13 +147,24 @@ namespace PetaVerseApi.Controller
                     var stringUrl = result.Item2;
                     if (!String.IsNullOrEmpty(blobName) && !String.IsNullOrEmpty(stringUrl))
                     {
-                        pet.PetAvatar = new PetaverseMedia()
+                        var petAvatar = new PetaverseMedia()
                         {
                             MediaName = blobName,
-                            MediaUrl  = stringUrl,
-                            Type      = MediaType.Avatar
+                            MediaUrl = stringUrl,
+                            Type = MediaType.Avatar
                         };
-                        await _animalRepository.SaveChangesAsync();
+                        _petaverseMediaRepository.Add(petAvatar);
+                        await _petaverseMediaRepository.SaveChangesAsync(cancellationToken);
+
+                        pet.PetAvatarId = petAvatar.Id; 
+                        await _animalRepository.SaveChangesAsync(cancellationToken);
+
+                        _animalPetaverseMediaRepository.Add(new AnimalPetaverseMedia()
+                        {
+                            AnimalId = pet.Id,
+                            PetaverMediaId = petAvatar.Id
+                        });
+                        await _animalPetaverseMediaRepository.SaveChangesAsync(cancellationToken);
                         return Ok(_mapper.Map<PetaverseMediaDTO>(pet.PetAvatar));
                     }
                     else return BadRequest("Look like the avatar couldnt upload to the storage");
@@ -184,10 +193,12 @@ namespace PetaVerseApi.Controller
                         {
                             using (Stream stream = formFile.OpenReadStream())
                             {
-                                Tuple<string, string, string> result = await _mediaService.UploadFileToStorage(stream, pet.SixDigitCode + "_" + formFile.FileName, petId);
-                                var blobName = result.Item1;
+                                Tuple<string, string, string> result = await _mediaService.UploadFileToStorage(stream, 
+                                                                                                               pet.SixDigitCode + "_" + formFile.FileName, 
+                                                                                                               petId);
+                                var blobName  = result.Item1;
                                 var stringUrl = result.Item2;
-                                var blobGuid = result.Item3;
+                                var blobGuid  = result.Item3;
 
                                 if (!String.IsNullOrEmpty(stringUrl))
                                 {
@@ -256,7 +267,7 @@ namespace PetaVerseApi.Controller
             userAnimals.ForEach(ua => _userAnimalRepository.Delete(ua));
 
             var animalPetaverseMedias = await _animalPetaverseMediaRepository.FindAll(apm => apm.AnimalId == id)
-                                                                         .ToListAsync();
+                                                                             .ToListAsync(cancellationToken);
 
 
 
@@ -265,6 +276,9 @@ namespace PetaVerseApi.Controller
                 var petaverseMedia = await _petaverseMediaRepository.FindByIdAsync(animalPetaverseMedia.PetaverMediaId);
                 if(petaverseMedia is not null)
                 {
+                    await _mediaService.DeleteFileAsync(petaverseMedia.MediaName, 
+                                                        petaverseMedia.Type);
+
                     _petaverseMediaRepository.Delete(petaverseMedia);
                     _animalPetaverseMediaRepository.Delete(animalPetaverseMedia);
                 }
