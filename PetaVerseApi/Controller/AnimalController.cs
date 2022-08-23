@@ -62,7 +62,6 @@ namespace PetaVerseApi.Controller
             return animal != null ? Ok(_mapper.Map<AnimalDTO>(animal)) : NotFound("Unable to find the requested animal"); 
         }
 
-
         [HttpGet("{userGuid}")]
         public async Task<IActionResult> GetAllByUserGuid(string userGuid, CancellationToken cancellationToken = default)
         {
@@ -79,12 +78,13 @@ namespace PetaVerseApi.Controller
                     {
                         var petPhotoIds = _animalPetaverseMediaRepository.FindAll(apm => apm.AnimalId == id).Select(apm => apm.PetaverMediaId).ToList();
                         var petPhotos = new List<PetaverseMediaDTO>();
-                        petPhotoIds.ForEach(id =>
+                        foreach (var petPhotoId in petPhotoIds)
                         {
-                            var photo = _petaverseMediaRepository.FindAll(media => media.Id == id && media.Type == MediaType.Photo).FirstOrDefault();
+                            //media => media.Id == id && media.Type == MediaType.Photo
+                            var photo = await _petaverseMediaRepository.FindByIdAsync(petPhotoId);
                             if (photo != null)
                                 petPhotos.Add(_mapper.Map<PetaverseMediaDTO>(photo));
-                        });
+                        };
                         var animalDTO = _mapper.Map<AnimalDTO>(animal);
                         animalDTO.PetPhotos = petPhotos;
 
@@ -108,28 +108,29 @@ namespace PetaVerseApi.Controller
             }
             using var petaverseTransaction = await _petaverseDbContext.Database.BeginTransactionAsync();
             var animal = _mapper.Map<Animal>(dto);
-            var breed = await _breedRepository.FindByIdIQueryable(dto.BreedId, cancellationToken).FirstOrDefaultAsync();
-
-            if (breed != null)
+            if (animal != null)
             {
-                animal.SixDigitCode = await _animalRepository.Generate6DigitCodeAsync();
-                animal.BreedId = breed.Id;
-                _animalRepository.Add(animal);
-                await _animalRepository.SaveChangesAsync(cancellationToken);
+                var breed = await _breedRepository.FindByIdIQueryable(dto.BreedId, cancellationToken).FirstOrDefaultAsync();
 
-                //Phai co dong nay
-                animal.Breed = breed;
+                if (breed != null)
+                {
+                    animal.SixDigitCode = await _animalRepository.Generate6DigitCodeAsync();
+                    animal.BreedId = breed.Id;
+                    _animalRepository.Add(animal);
+                    await _animalRepository.SaveChangesAsync(cancellationToken);
+                }
+                else return NotFound("Can't find this breed is our source !!");
+
+                if (listOfOwner.ToList().Count > 0)
+                {
+                    listOfOwner.ToList().ForEach(owner => _userAnimalRepository.Add(new UserAnimal() { UserId = owner.Id, AnimalId = animal.Id }));
+                    await _userAnimalRepository.SaveChangesAsync(cancellationToken);
+                }
+
+                await petaverseTransaction.CommitAsync(cancellationToken);
+                return Ok(animal.Id);
             }
-            else return NotFound("Can't find this breed is our source !!");
-
-            if(listOfOwner.ToList().Count > 0)
-            {
-                listOfOwner.ToList().ForEach(owner => _userAnimalRepository.Add(new UserAnimal() { UserId = owner.Id, AnimalId = animal.Id}));
-                await _userAnimalRepository.SaveChangesAsync(cancellationToken);
-            }
-
-            await petaverseTransaction.CommitAsync(cancellationToken);
-            return CreatedAtAction(nameof(GetById), new { animalId = animal.Id }, _mapper.Map<AnimalDTO>(animal));
+            else return BadRequest("Can't converter request to animal");
         }
 
         [HttpPost("{petId}")]

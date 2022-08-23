@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PetaVerseApi.Contract;
+using PetaVerseApi.Core.Entities;
 using PetaVerseApi.DTOs;
 
 namespace PetaVerseApi.Controller
@@ -39,6 +40,19 @@ namespace PetaVerseApi.Controller
         {
             var user = await _userRepository.FindByGuidAsync(userGuid, cancellationToken);
             return user != null ? Ok(_mapper.Map<UserDTO>(user)) : NotFound("Unable to find the requested user");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Register(UserDTO userDTO, CancellationToken cancellationToken)
+        {
+            var existingUser = await _userRepository.FindByGuidAsync(userDTO.Guid);
+            if (existingUser is null)
+            {
+                _userRepository.Add(_mapper.Map<User>(userDTO));
+                await _userRepository.SaveChangesAsync(cancellationToken);
+                return Ok(userDTO.Guid);
+            }
+            else return BadRequest("This user is already exist !");
         }
     }
 }
