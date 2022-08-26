@@ -27,11 +27,6 @@ namespace PetaVerseApi.Services
             _galleryBlobContainerClient = galleryBlobContainerClient(ContainerEnum.GalleryContainer);
         }
 
-        public Task<List<string>> GetThumbNailUrls()
-        {
-            throw new NotImplementedException();
-        }
-
         public bool IsImage(IFormFile file)
         {
             if (file.ContentType.Contains("image"))
