@@ -7,6 +7,7 @@ using PetaVerseApi.Core.Entities;
 using PetaVerseApi.DTOs;
 using PetaVerseApi.DTOs.Create;
 using PetaVerseApi.Interfaces;
+using PetaVerseApi.Services;
 using MediaType = PetaVerseApi.Core.Entities.MediaType;
 
 namespace PetaVerseApi.Controller
@@ -15,6 +16,7 @@ namespace PetaVerseApi.Controller
     {
         private readonly IMapper                         _mapper;
         private readonly IMediaService                   _mediaService;
+        private readonly AnimalService                   _animalService;
         private readonly IUserRepository                 _userRepository;
         private readonly IBreedRepository                _breedRepository;
         private readonly IAnimalRepository               _animalRepository;
@@ -26,6 +28,7 @@ namespace PetaVerseApi.Controller
 
         public AnimalController(IMapper mapper,
                                 IMediaService mediaService, 
+                                AnimalService animalService,
                                 IUserRepository userRepository,
                                 IBreedRepository breedRepository,
                                 IAnimalRepository animalRepository,
@@ -37,6 +40,7 @@ namespace PetaVerseApi.Controller
         {
             _mapper                         = mapper;
             _mediaService                   = mediaService;
+            _animalService                  = animalService;
             _userRepository                 = userRepository;
             _breedRepository                = breedRepository;
             _animalRepository               = animalRepository;
@@ -139,39 +143,13 @@ namespace PetaVerseApi.Controller
             var pet = await _animalRepository.FindByIdAsync(petId, cancellationToken);
             if (pet == null)
                 return NotFound("Not Found This Pet");
-            if (_mediaService.IsImage(avatar))
-            {
-                using(Stream stream = avatar.OpenReadStream())
-                {
-                    Tuple<string, string> result = await _mediaService.UploadAvatarToStorage(stream, avatar.FileName + pet.SixDigitCode);
-                    var blobName = result.Item1;
-                    var stringUrl = result.Item2;
-                    if (!String.IsNullOrEmpty(blobName) && !String.IsNullOrEmpty(stringUrl))
-                    {
-                        var petAvatar = new PetaverseMedia()
-                        {
-                            MediaName = blobName,
-                            MediaUrl = stringUrl,
-                            Type = MediaType.Avatar
-                        };
-                        _petaverseMediaRepository.Add(petAvatar);
-                        await _petaverseMediaRepository.SaveChangesAsync(cancellationToken);
-
-                        pet.PetAvatarId = petAvatar.Id; 
-                        await _animalRepository.SaveChangesAsync(cancellationToken);
-
-                        _animalPetaverseMediaRepository.Add(new AnimalPetaverseMedia()
-                        {
-                            AnimalId = pet.Id,
-                            PetaverMediaId = petAvatar.Id
-                        });
-                        await _animalPetaverseMediaRepository.SaveChangesAsync(cancellationToken);
-                        return Ok(_mapper.Map<PetaverseMediaDTO>(pet.PetAvatar));
-                    }
-                    else return BadRequest("Look like the avatar couldnt upload to the storage");
-                }
-            }
-            else return new UnsupportedMediaTypeResult();
+            var petaverMediaDTO = await _animalService.UploadAnimalPhoto(pet, 
+                                                                      avatar, 
+                                                                      MediaType.Avatar, 
+                                                                      cancellationToken);
+            return petaverMediaDTO is null 
+                    ? BadRequest("Can't create avatar") 
+                    : Ok(petaverMediaDTO);
         }
 
         [HttpPost("{petId}"), DisableRequestSizeLimit]
@@ -182,65 +160,9 @@ namespace PetaVerseApi.Controller
                 return NotFound("Not Found This Pet");
             else
             {
-                var uploadedPetPhotos = new List<PetaverseMediaDTO>();
-                try
-                {
-                    if (medias.Count == 0)
-                        return BadRequest("No medias received from the upload");
-
-                    foreach (var formFile in medias)
-                    {
-                        if (_mediaService.IsImage(formFile) && formFile.Length > 0)
-                        {
-                            using (Stream stream = formFile.OpenReadStream())
-                            {
-                                Tuple<string, string, string> result = await _mediaService.UploadFileToStorage(stream, 
-                                                                                                               pet.SixDigitCode + "_" + formFile.FileName, 
-                                                                                                               petId);
-                                var blobName  = result.Item1;
-                                var stringUrl = result.Item2;
-                                var blobGuid  = result.Item3;
-
-                                if (!String.IsNullOrEmpty(stringUrl))
-                                {
-                                    var petaverseMedia = new PetaverseMedia()
-                                    {
-                                        MediaName  = blobName,
-                                        MediaUrl   = stringUrl,
-                                        TimeUpload = DateTime.Now,
-                                        Type       = MediaType.Photo
-                                    };
-
-                                    _petaverseMediaRepository.Add(petaverseMedia);
-                                    await _petaverseMediaRepository.SaveChangesAsync(cancellationToken);
-
-                                    _animalPetaverseMediaRepository.Add(new AnimalPetaverseMedia()
-                                    {
-                                        AnimalId = pet.Id,
-                                        PetaverMediaId = petaverseMedia.Id
-                                    });
-                                    await _animalPetaverseMediaRepository.SaveChangesAsync(cancellationToken);
-
-                                    uploadedPetPhotos.Add(new PetaverseMediaDTO() 
-                                    {
-                                        Id = petaverseMedia.Id,
-                                        MediaUrl = stringUrl,
-                                        Type = DTOs.MediaType.Photo
-                                    });
-                                } else return BadRequest("Look like the image couldnt upload to the storage");
-                            }
-                        }
-                        else
-                        {
-                            return new UnsupportedMediaTypeResult();
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    return BadRequest(ex.Message);
-                }
-                return Ok(uploadedPetPhotos);
+                if (medias.Count == 0)
+                    return BadRequest("No medias received from the upload");
+                return Ok(await _animalService.UploadAnimalPhotos(pet, medias, cancellationToken));
             }
         }
 

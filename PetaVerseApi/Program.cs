@@ -12,6 +12,7 @@ using PetaVerseApi.Interfaces;
 using PetaVerseApi.Services;
 using Azure.Storage.Blobs;
 using PetaVerseApi.Enums;
+using PetaVerseApi.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,7 +42,14 @@ builder.Services.AddTransient<Func<ContainerEnum, BlobContainerClient>>(provider
     }
 });
 
-builder.Services.AddSingleton<IMediaService, AzureBlobStorageMediaService>();
+//Helpers
+builder.Services.AddSingleton<AzureStorageAccountHelper>();
+
+//Controller Services
+builder.Services.AddSingleton<AnimalService>();
+
+//Services
+builder.Services.AddSingleton<IMediaService,        AzureBlobStorageMediaService>();
 builder.Services.AddSingleton<IExcelHandlerService, ExcelHandlerService>();
 
 builder.Services.AddScoped<IUserRepository,                 UserRepository>()
