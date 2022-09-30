@@ -34,7 +34,7 @@ builder.Services.AddTransient<Func<ContainerEnum, BlobContainerClient>>(provider
     switch (container)
     {
         case ContainerEnum.AvatarContainer:
-            return new BlobContainerClient(config.BlobConnectionString, config.PetaverseAvatar);
+            return new BlobContainerClient(config.BlobConnectionString, config.PetaversePetAvatars);
         case ContainerEnum.GalleryContainer:
             return new BlobContainerClient(config.BlobConnectionString, config.PetaverseGallery);
         default:
@@ -45,12 +45,11 @@ builder.Services.AddTransient<Func<ContainerEnum, BlobContainerClient>>(provider
 //Helpers
 builder.Services.AddSingleton<AzureStorageAccountHelper>();
 
-//Controller Services
-builder.Services.AddSingleton<AnimalService>();
 
 //Services
-builder.Services.AddSingleton<IMediaService,        AzureBlobStorageMediaService>();
+builder.Services.AddSingleton<IMediaService,        MediaService>();
 builder.Services.AddSingleton<IExcelHandlerService, ExcelHandlerService>();
+
 
 builder.Services.AddScoped<IUserRepository,                 UserRepository>()
                 .AddScoped<IBreedRepository,                BreedRepository>()
@@ -64,6 +63,8 @@ builder.Services.AddScoped<IUserRepository,                 UserRepository>()
                 .AddScoped<IPetaverseMediaRepository,       PetaverseMediaRepository>()
                 .AddScoped<IAnimalPetaverseMediaRepository, AnimalPetaverseMediaRepository>();
 
+//Controller Services
+builder.Services.AddScoped<AnimalService>();
 
 builder.Services.AddCors(options =>
 {

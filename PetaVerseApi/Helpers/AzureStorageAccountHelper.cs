@@ -23,9 +23,9 @@ namespace PetaVerseApi.Helpers
             _avatarBlobContainerClient  = avatarBlobContainerClient(ContainerEnum.AvatarContainer);
             _galleryBlobContainerClient = galleryBlobContainerClient(ContainerEnum.GalleryContainer);
         }
-        private string GenerateUrl(string accountName, string fileName)
-            => "https://" + accountName + ".blob.core.windows.net/petaversegallery" + "/" + fileName;
-        public bool IsImage(IFormFile file)
+        private string GenerateUrl(string accountName, string containerName, string fileName)
+            => "https://" + accountName + ".blob.core.windows.net/" + containerName + "/" + fileName;
+        private bool IsImage(IFormFile file)
         {
             if (file.ContentType.Contains("image"))
                 return true;
@@ -35,7 +35,7 @@ namespace PetaVerseApi.Helpers
             return formats.Any(item => file.FileName.EndsWith(item, StringComparison.OrdinalIgnoreCase));
         }
 
-        public bool IsVideo(IFormFile file)
+        private bool IsVideo(IFormFile file)
         {
             if (file.ContentType.Contains("video"))
                 return true;
@@ -47,11 +47,13 @@ namespace PetaVerseApi.Helpers
 
         public async Task<PetaverseMedia> UploadFileToStorage(Stream fileStream,
                                                               string fileName,
-                                                              int petId,
-                                                              MediaType type)
+                                                              MediaType type,
+                                                              string container)
         {
             var blobGuid = Guid.NewGuid().ToString("N");
-            var blobUri = new Uri(GenerateUrl(_storageConfig.CurrentValue.AccountName, fileName));
+            var blobUri = new Uri(GenerateUrl(_storageConfig.CurrentValue.AccountName,
+                                              container,
+                                              fileName));
             // Create the blob client.
             var blobClient = new BlobClient(blobUri, _storageCredentials);
             // Upload the file
@@ -63,19 +65,6 @@ namespace PetaVerseApi.Helpers
                 MediaUrl = blobUri.AbsoluteUri,
                 Type = type
             };
-        }
-
-        public async Task<Tuple<string, string>> UploadAvatarToStorage(Stream fileStream,
-                                                                     string fileName)
-        {
-            var blobUri = new Uri(GenerateUrl(_storageConfig.CurrentValue.AccountName, fileName));
-            // Create the blob client.
-            var blobClient = new BlobClient(blobUri, _storageCredentials);
-
-            // Upload the file
-            await blobClient.UploadAsync(fileStream);
-
-            return new Tuple<string, string>(blobClient.Name, blobClient.Uri.AbsoluteUri);
         }
 
         public async Task DeleteFilesAsync(List<string> fileListName, MediaType mediaType)

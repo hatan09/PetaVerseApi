@@ -109,5 +109,10 @@ namespace PetaVerseApi.Services
         {
             return null;
         }
+
+        public Task<PetaverseMedia> UploadFileToStorage(Stream fileStream, string fileName, MediaType type, string container)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

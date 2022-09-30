@@ -41,6 +41,17 @@ namespace PetaVerseApi.Controller
             return Ok(_mapper.Map<PetShortsDTO>(petShorts));
         }
 
+        [HttpPost]
+        public async Task<IActionResult> UploadVideo(int petShortId, 
+                                                     IFormFile video, 
+                                                     CancellationToken cancellationToken)
+        {
+            var petShort = await _petShortsRepository.FindByIdAsync(petShortId, cancellationToken);
+            if (petShort == null)
+                return NotFound("Not Found This Short");
+            return Ok();
+        }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> Update([FromBody] PetShortsDTO dto, CancellationToken cancellationToken = default)
         {

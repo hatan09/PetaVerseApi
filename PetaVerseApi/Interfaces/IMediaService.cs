@@ -8,7 +8,7 @@ namespace PetaVerseApi.Interfaces
         Task DeleteFileAsync(string fileName, MediaType mediaType);
         Task<PetaverseMedia> UploadFileToStorage(Stream fileStream,
                                                  string fileName,
-                                                 int petId,
-                                                 MediaType type);
+                                                 MediaType type,
+                                                 string container);
     }
 }

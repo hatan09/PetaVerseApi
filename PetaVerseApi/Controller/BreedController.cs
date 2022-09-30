@@ -6,7 +6,10 @@ using PetaVerseApi.Core.Entities;
 using PetaVerseApi.DTOs;
 using PetaVerseApi.Interfaces;
 using ExcelDataReader;
-
+using MediaType = PetaVerseApi.Core.Entities.MediaType;
+using Microsoft.Extensions.Options;
+using PetaVerseApi.AppSettings;
+using PetaVerseApi.Services;
 
 namespace PetaVerseApi.Controller
 {
@@ -18,19 +21,25 @@ namespace PetaVerseApi.Controller
         private readonly ISpeciesRepository _speciesRepository;
         private readonly IAnimalRepository _animalRepository;
         private readonly IExcelHandlerService _excelHandlerService;
+        private readonly IOptionsMonitor<AzureStorageConfig> _storageConfig;
+        private readonly AnimalService _animalService;
 
-        public BreedController(ISpeciesRepository speciesRepository,
-                               IMediaService mediaService,
-                               IBreedRepository breedRepository,
-                               IMapper mapper,
-                               IAnimalRepository animalRepository,
-                               IExcelHandlerService excelHandlerService)
+        public BreedController(IMapper                             mapper,
+                               IMediaService                       mediaService,
+                               AnimalService                       animalService,
+                               IBreedRepository                    breedRepository,
+                               IAnimalRepository                   animalRepository, 
+                               ISpeciesRepository                  speciesRepository,
+                               IExcelHandlerService                excelHandlerService,
+                               IOptionsMonitor<AzureStorageConfig> storageConfig)
         {
-            _speciesRepository = speciesRepository;
-            _mediaService = mediaService;
-            _breedRepository = breedRepository;
-            _mapper = mapper;
-            _animalRepository = animalRepository;
+            _mapper              = mapper;
+            _mediaService        = mediaService;
+            _storageConfig       = storageConfig;
+            _animalService       = animalService;
+            _breedRepository     = breedRepository;
+            _animalRepository    = animalRepository;
+            _speciesRepository   = speciesRepository;
             _excelHandlerService = excelHandlerService;
         }
 
@@ -66,31 +75,17 @@ namespace PetaVerseApi.Controller
         }
 
         [HttpPost("{id}")]
-        public async Task<IActionResult> UploadBreeadImage(int id, IFormFile image, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> UploadBreedImage(int id, IFormFile image, CancellationToken cancellationToken = default)
         {
-            if (_mediaService.IsImage(image))
+            var breed = await _breedRepository.FindByIdAsync(id, cancellationToken);
+            if (breed is null)
+                return NotFound($"No Breed With Id {id} Found!");
+            else
             {
-                var breed = await _breedRepository.FindByIdAsync(id, cancellationToken);
-                if (breed is null)
-                {
-                    return NotFound($"No Breed With Id {id} Found!");
-                }
-                using (Stream stream = image.OpenReadStream())
-                {
-                    Tuple<string, string> result = await _mediaService.UploadAvatarToStorage(stream, image.FileName);
-                    var blobName = result.Item1;
-                    var stringUrl = result.Item2;
-                    if (!String.IsNullOrEmpty(blobName) && !string.IsNullOrEmpty(stringUrl))
-                    {
-                        breed.ImageUrl = stringUrl;
-                        await _breedRepository.SaveChangesAsync(cancellationToken);
-
-                        return Ok(stringUrl);
-                    }
-                    else return BadRequest("Look like the image couldnt upload to the storage");
-                }
+                return Ok(await _animalService.UploadFileAsync(image, MediaType.Photo, 
+                                                               _storageConfig.CurrentValue.PetaverseGeneralFile,
+                                                               cancellationToken));
             }
-            else return new UnsupportedMediaTypeResult();
         }
 
 

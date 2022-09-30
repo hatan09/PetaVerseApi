@@ -2,6 +2,8 @@
 using Azure.Storage.Blobs.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using PetaVerseApi.AppSettings;
 using PetaVerseApi.Contract;
 using PetaVerseApi.Core.Database;
 using PetaVerseApi.Core.Entities;
@@ -14,16 +16,17 @@ namespace PetaVerseApi.Services
 {
     public class AnimalService
     {
-        private readonly IMapper                         _mapper;
-        private readonly IMediaService                   _mediaService;
-        private readonly IUserRepository                 _userRepository;
-        private readonly IBreedRepository                _breedRepository;
-        private readonly IAnimalRepository               _animalRepository;
-        private readonly ISpeciesRepository              _speciesRepository;
-        private readonly ApplicationDbContext            _petaverseDbContext;
-        private readonly IUserAnimalRepository           _userAnimalRepository;
-        private readonly IPetaverseMediaRepository       _petaverseMediaRepository;
-        private readonly IAnimalPetaverseMediaRepository _animalPetaverseMediaRepository;
+        private readonly IMapper                             _mapper;
+        private readonly IMediaService                       _mediaService;
+        private readonly IUserRepository                     _userRepository;
+        private readonly IBreedRepository                    _breedRepository;
+        private readonly IAnimalRepository                   _animalRepository;
+        private readonly ISpeciesRepository                  _speciesRepository;
+        private readonly ApplicationDbContext                _petaverseDbContext;
+        private readonly IUserAnimalRepository               _userAnimalRepository;
+        private readonly IPetaverseMediaRepository           _petaverseMediaRepository;
+        private readonly IAnimalPetaverseMediaRepository     _animalPetaverseMediaRepository;
+        private readonly IOptionsMonitor<AzureStorageConfig> _azureStorageConfig;
         public AnimalService(IMapper mapper,
                              IMediaService mediaService,
                              IUserRepository userRepository,
@@ -33,7 +36,8 @@ namespace PetaVerseApi.Services
                              ApplicationDbContext petaverseDpContext,
                              IUserAnimalRepository userAnimalRepository,
                              IPetaverseMediaRepository petaverseMediaRepository,
-                             IAnimalPetaverseMediaRepository animalPetaverseMediaRepository)
+                             IAnimalPetaverseMediaRepository animalPetaverseMediaRepository,
+                             IOptionsMonitor<AzureStorageConfig> azureStorageConfig)
         {
             _mapper = mapper;
             _mediaService = mediaService;
@@ -41,23 +45,26 @@ namespace PetaVerseApi.Services
             _breedRepository = breedRepository;
             _animalRepository = animalRepository;
             _speciesRepository = speciesRepository;
+            _azureStorageConfig = azureStorageConfig;
             _petaverseDbContext = petaverseDpContext;
             _userAnimalRepository = userAnimalRepository;
             _petaverseMediaRepository = petaverseMediaRepository;
             _animalPetaverseMediaRepository = animalPetaverseMediaRepository;
         }
 
-        public async Task<List<PetaverseMediaDTO>> UploadAnimalPhotos(Animal animal,
-                                                                      List<IFormFile> medias,
-                                                                      CancellationToken cancellationToken)
+        public async Task<List<PetaverseMediaDTO>> UploadAnimalPhotosAsync(Animal animal,
+                                                                           IFormFileCollection medias,
+                                                                           CancellationToken cancellationToken)
         {
             var uploadedPetPhotos = new List<PetaverseMediaDTO>();
             foreach (var formFile in medias)
             {
                 using (Stream stream = formFile.OpenReadStream())
                 {
-                    var petaverseMedia = await _mediaService.UploadFileToStorage(stream, animal.SixDigitCode + "_" + formFile.FileName,
-                                                                                 animal.Id, MediaType.Photo);
+                    var petaverseMedia = await _mediaService.UploadFileToStorage(stream, 
+                                                                                 animal.SixDigitCode + "_" + formFile.FileName,
+                                                                                 MediaType.Photo,
+                                                                                 _azureStorageConfig.CurrentValue.PetaverseGallery);
                     if (petaverseMedia is not null)
                     {
 
@@ -83,15 +90,39 @@ namespace PetaVerseApi.Services
             return uploadedPetPhotos;
         }
 
-        public async Task<PetaverseMediaDTO?> UploadAnimalPhoto(Animal animal,
-                                                                IFormFile file,
-                                                                MediaType type,
-                                                                CancellationToken cancellationToken)
+        public async Task<PetaverseMediaDTO?> UploadFileAsync(IFormFile file,
+                                                              MediaType type,
+                                                              string containerName,
+                                                              CancellationToken cancellationToken)
         {
             using (Stream stream = file.OpenReadStream())
             {
-                var petaverseMedia = await _mediaService.UploadFileToStorage(stream, animal.SixDigitCode + "_" + file.FileName,
-                                                                             animal.Id, type);
+                var petaverseMedia = await _mediaService.UploadFileToStorage(stream, 
+                                                                             file.FileName,
+                                                                             type,
+                                                                             containerName);
+                if (petaverseMedia is not null)
+                {
+                    _petaverseMediaRepository.Add(petaverseMedia);
+                    await _petaverseMediaRepository.SaveChangesAsync(cancellationToken);
+                    return _mapper.Map<PetaverseMediaDTO>(petaverseMedia);
+                }
+                else return null;
+            }
+        }
+
+        public async Task<PetaverseMediaDTO?> UploadAnimalPhotoAsync(Animal animal,
+                                                                     IFormFile file,
+                                                                     MediaType type,
+                                                                     string containerName,
+                                                                     CancellationToken cancellationToken)
+        {
+            using (Stream stream = file.OpenReadStream())
+            {
+                var petaverseMedia = await _mediaService.UploadFileToStorage(stream, 
+                                                                             animal.SixDigitCode + "_" + file.FileName,
+                                                                             type, 
+                                                                             containerName);
                 if (petaverseMedia is not null)
                 {
                     _petaverseMediaRepository.Add(petaverseMedia);

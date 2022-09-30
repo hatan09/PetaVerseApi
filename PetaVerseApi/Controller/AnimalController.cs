@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using PetaVerseApi.AppSettings;
 using PetaVerseApi.Contract;
 using PetaVerseApi.Core.Database;
 using PetaVerseApi.Core.Entities;
@@ -14,17 +16,18 @@ namespace PetaVerseApi.Controller
 {
     public class AnimalController : BaseController
     {
-        private readonly IMapper                         _mapper;
-        private readonly IMediaService                   _mediaService;
-        private readonly AnimalService                   _animalService;
-        private readonly IUserRepository                 _userRepository;
-        private readonly IBreedRepository                _breedRepository;
-        private readonly IAnimalRepository               _animalRepository;
-        private readonly ISpeciesRepository              _speciesRepository;
-        private readonly ApplicationDbContext            _petaverseDbContext;
-        private readonly IUserAnimalRepository           _userAnimalRepository;
-        private readonly IPetaverseMediaRepository       _petaverseMediaRepository;
-        private readonly IAnimalPetaverseMediaRepository _animalPetaverseMediaRepository;
+        private readonly IMapper                             _mapper;
+        private readonly IMediaService                       _mediaService;
+        private readonly AnimalService                       _animalService;
+        private readonly IUserRepository                     _userRepository;
+        private readonly IBreedRepository                    _breedRepository;
+        private readonly IAnimalRepository                   _animalRepository;
+        private readonly ISpeciesRepository                  _speciesRepository;
+        private readonly ApplicationDbContext                _petaverseDbContext;
+        private readonly IUserAnimalRepository               _userAnimalRepository;
+        private readonly IPetaverseMediaRepository           _petaverseMediaRepository;
+        private readonly IAnimalPetaverseMediaRepository     _animalPetaverseMediaRepository;
+        private readonly IOptionsMonitor<AzureStorageConfig> _azureStorageConfig;
 
         public AnimalController(IMapper mapper,
                                 IMediaService mediaService, 
@@ -36,7 +39,8 @@ namespace PetaVerseApi.Controller
                                 ApplicationDbContext petaverseDpContext,
                                 IUserAnimalRepository userAnimalRepository,
                                 IPetaverseMediaRepository petaverseMediaRepository,
-                                IAnimalPetaverseMediaRepository animalPetaverseMediaRepository)
+                                IAnimalPetaverseMediaRepository animalPetaverseMediaRepository,
+                                IOptionsMonitor<AzureStorageConfig> azureStorageConfig)
         {
             _mapper                         = mapper;
             _mediaService                   = mediaService;
@@ -45,6 +49,7 @@ namespace PetaVerseApi.Controller
             _breedRepository                = breedRepository;
             _animalRepository               = animalRepository;
             _speciesRepository              = speciesRepository;
+            _azureStorageConfig             = azureStorageConfig;
             _petaverseDbContext             = petaverseDpContext;
             _userAnimalRepository           = userAnimalRepository;   
             _petaverseMediaRepository       = petaverseMediaRepository;
@@ -143,26 +148,30 @@ namespace PetaVerseApi.Controller
             var pet = await _animalRepository.FindByIdAsync(petId, cancellationToken);
             if (pet == null)
                 return NotFound("Not Found This Pet");
-            var petaverMediaDTO = await _animalService.UploadAnimalPhoto(pet, 
-                                                                      avatar, 
-                                                                      MediaType.Avatar, 
-                                                                      cancellationToken);
+            var petaverMediaDTO = await _animalService.UploadAnimalPhotoAsync(pet, 
+                                                                              avatar, 
+                                                                              MediaType.Avatar, 
+                                                                              _azureStorageConfig.CurrentValue.PetaversePetAvatars,
+                                                                              cancellationToken);
             return petaverMediaDTO is null 
                     ? BadRequest("Can't create avatar") 
                     : Ok(petaverMediaDTO);
         }
 
         [HttpPost("{petId}"), DisableRequestSizeLimit]
-        public async Task<IActionResult> UploadAnimalMedias(int petId, List<IFormFile> medias, CancellationToken cancellationToken)
+        public async Task<IActionResult> UploadAnimalMedias(int petId, IFormFileCollection medias, CancellationToken cancellationToken)
         {
-            var pet = await _animalRepository.FindByIdAsync(petId, cancellationToken);
+            var pet = await _animalRepository.FindByIdAsync(petId, 
+                                                            cancellationToken);
             if(pet == null)
                 return NotFound("Not Found This Pet");
             else
             {
                 if (medias.Count == 0)
                     return BadRequest("No medias received from the upload");
-                return Ok(await _animalService.UploadAnimalPhotos(pet, medias, cancellationToken));
+                return Ok(await _animalService.UploadAnimalPhotosAsync(pet, 
+                                                                       medias, 
+                                                                       cancellationToken));
             }
         }
 
