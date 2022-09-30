@@ -64,7 +64,7 @@ namespace PetaVerseApi.Services
                     var petaverseMedia = await _mediaService.UploadFileToStorage(stream, 
                                                                                  animal.SixDigitCode + "_" + formFile.FileName,
                                                                                  MediaType.Photo,
-                                                                                 _azureStorageConfig.CurrentValue.PetaverseGallery);
+                                                                                 _azureStorageConfig.CurrentValue.PetaversePhotos);
                     if (petaverseMedia is not null)
                     {
 

@@ -36,9 +36,9 @@ builder.Services.AddTransient<Func<ContainerEnum, BlobContainerClient>>(provider
         case ContainerEnum.AvatarContainer:
             return new BlobContainerClient(config.BlobConnectionString, config.PetaversePetAvatars);
         case ContainerEnum.GalleryContainer:
-            return new BlobContainerClient(config.BlobConnectionString, config.PetaverseGallery);
+            return new BlobContainerClient(config.BlobConnectionString, config.PetaversePhotos);
         default:
-            return new BlobContainerClient(config.BlobConnectionString, config.PetaverseGallery);
+            return new BlobContainerClient(config.BlobConnectionString, config.PetaversePhotos);
     }
 });
 
